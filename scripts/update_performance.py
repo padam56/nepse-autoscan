@@ -183,14 +183,18 @@ def git_commit_and_push():
     os.chdir(str(ROOT))
     try:
         # Check if there are changes
-        result = subprocess.run(['git', 'diff', '--quiet', 'PERFORMANCE.md', 'docs/index.html'],
+        result = subprocess.run(['git', 'diff', '--quiet', 'PERFORMANCE.md', 'docs/'],
                                 capture_output=True)
         if result.returncode == 0:
-            print("[PERF] No changes to push")
-            return False
+            # Also check for untracked stockdata files
+            untracked = subprocess.run(['git', 'ls-files', '--others', '--exclude-standard', 'docs/'],
+                                       capture_output=True, text=True)
+            if not untracked.stdout.strip():
+                print("[PERF] No changes to push")
+                return False
 
         today = datetime.now().strftime("%Y-%m-%d")
-        subprocess.run(['git', 'add', 'PERFORMANCE.md', 'docs/index.html'], check=True,
+        subprocess.run(['git', 'add', 'PERFORMANCE.md', 'docs/'], check=True,
                         capture_output=True)
         subprocess.run(['git', 'commit', '-m',
                         f'Update paper trading performance ({today})'],

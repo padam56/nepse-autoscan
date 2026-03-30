@@ -1289,19 +1289,20 @@ def build_html_email(
         color    = sig_colors.get(signal, "#888")
         reasons_str = " · ".join(reasons) if reasons else "–"
 
+        rat_html = f'<div class="pick-rationale">{rat}</div>' if rat else ""
         rows_html += f"""
-        <tr>
-          <td class="rank">{i}</td>
-          <td class="sym">{sym}</td>
-          <td style="text-align:center"><span class="badge" style="background:{color}">{signal}</span></td>
-          <td style="text-align:center;font-weight:700;font-size:15px">{score:.0f}</td>
-          <td style="text-align:center">{ta_s:.0f}</td>
-          <td style="text-align:center">{ml_s:.0f}</td>
-          <td style="text-align:center">{gru_cell}</td>
-          <td style="text-align:center;font-weight:600">{kelly:.1f}%</td>
-          <td style="font-size:11px;color:#666">{reasons_str}</td>
-        </tr>
-        {"<tr><td colspan='9' class='rationale'>&#x1F4AC; " + rat + "</td></tr>" if rat else ""}
+          <div class="pick-card">
+            <div class="pick-header">
+              <span class="pick-sym">{i}. {sym}</span>
+              <span class="pick-badge" style="background:{color}">{signal}</span>
+              <span class="pick-score">{score:.0f}</span>
+            </div>
+            <div class="pick-metrics">
+              TA {ta_s:.0f} &middot; ML {ml_s:.0f} &middot; GRU {gru_cell} &middot; Kelly {kelly:.1f}%
+            </div>
+            <div class="pick-reasons">{reasons_str}</div>
+            {rat_html}
+          </div>
         """
 
     # Portfolio table
@@ -1312,12 +1313,9 @@ def build_html_email(
         live_p = live.get(pos["symbol"], {}).get("price", "–")
         port_rows += f"""
         <tr>
-          <td style="font-weight:600">{pos["symbol"]}</td>
-          <td style="text-align:right">{pos["shares"]:,}</td>
-          <td style="text-align:right">{pos["wacc"]:.2f}</td>
-          <td style="text-align:right">{live_p}</td>
-          <td style="text-align:right" class="{pnl_cls}">{pnl_arrow} {pos["pnl_pct"]:+.1f}%</td>
-          <td style="text-align:right" class="{pnl_cls}">Rs {pos["pnl"]:,.0f}</td>
+          <td style="padding:6px 8px;font-weight:600;font-size:13px;">{pos["symbol"]}<br><span style="font-weight:400;font-size:11px;color:#888;">{pos["shares"]:,} @ {pos["wacc"]:.0f}</span></td>
+          <td style="padding:6px 8px;text-align:right;font-size:13px;">{live_p}</td>
+          <td style="padding:6px 8px;text-align:right;font-size:13px;" class="{pnl_cls}">{pnl_arrow} {pos["pnl_pct"]:+.1f}%<br><span style="font-size:11px;">Rs {pos["pnl"]:,.0f}</span></td>
         </tr>
         """
 
@@ -1369,36 +1367,29 @@ def build_html_email(
     <html>
     <head>
       <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
       <style>
         body {{ font-family: 'Segoe UI', Arial, sans-serif; background:#f0f2f5; margin:0; padding:0; }}
-        .wrap {{ max-width:720px; margin:16px auto; }}
-        .card {{ background:#fff; border-radius:12px; box-shadow:0 1px 6px rgba(0,0,0,0.1); padding:0; margin-bottom:16px; overflow:hidden; }}
-        .header {{ background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%); color:#fff; padding:20px 24px; }}
-        .header h1 {{ margin:0; font-size:20px; font-weight:600; letter-spacing:0.3px; }}
-        .header .sub {{ color:#b3c0ff; font-size:13px; margin-top:4px; }}
-        .stats-row {{ display:flex; gap:0; border-bottom:1px solid #eee; }}
-        .stat {{ flex:1; text-align:center; padding:14px 8px; border-right:1px solid #eee; }}
-        .stat:last-child {{ border-right:none; }}
-        .stat .val {{ font-size:22px; font-weight:700; color:#1a237e; }}
-        .stat .lbl {{ font-size:11px; color:#888; text-transform:uppercase; letter-spacing:0.5px; margin-top:2px; }}
-        .section {{ padding:16px 20px; }}
+        .wrap {{ max-width:600px; margin:0 auto; }}
+        .card {{ background:#fff; border-radius:12px; box-shadow:0 1px 6px rgba(0,0,0,0.1); padding:0; margin-bottom:12px; overflow:hidden; }}
+        .header {{ background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%); color:#fff; padding:20px 16px; }}
+        .header h1 {{ margin:0; font-size:18px; font-weight:600; letter-spacing:0.3px; }}
+        .header .sub {{ color:#b3c0ff; font-size:12px; margin-top:4px; }}
+        .section {{ padding:12px 16px; }}
         .section h2 {{ font-size:15px; color:#333; margin:0 0 12px 0; font-weight:600; }}
         table {{ width:100%; border-collapse:collapse; }}
-        th {{ background:#f5f6fa; color:#555; padding:8px 10px; text-align:left; font-size:11px;
-              text-transform:uppercase; letter-spacing:0.5px; border-bottom:2px solid #e0e0e0; }}
-        td {{ padding:8px 10px; border-bottom:1px solid #f0f0f0; font-size:13px; }}
-        .rank {{ font-weight:700; color:#1a237e; text-align:center; }}
-        .sym {{ font-weight:700; font-size:14px; }}
-        .badge {{ display:inline-block; padding:3px 10px; border-radius:12px; font-size:11px;
-                  font-weight:600; color:#fff; letter-spacing:0.3px; }}
-        .rationale {{ font-size:12px; color:#555; padding:6px 10px 6px 40px; border-bottom:1px solid #f0f0f0;
-                      font-style:italic; line-height:1.4; background:#fafbff; }}
         .pnl-pos {{ color:#1b5e20; font-weight:600; }}
         .pnl-neg {{ color:#c62828; font-weight:600; }}
         .port-total {{ font-weight:700; background:#f5f6fa; }}
         .footer {{ text-align:center; padding:16px; color:#999; font-size:11px; line-height:1.6; }}
-        .regime-pill {{ display:inline-block; padding:4px 14px; border-radius:16px; font-weight:600;
-                        font-size:12px; color:#fff; background:{regime_color}; }}
+        .pick-card {{ background:#fafbff; border:1px solid #e8eaf6; border-radius:8px; padding:12px; margin-bottom:8px; }}
+        .pick-header {{ margin-bottom:6px; }}
+        .pick-sym {{ font-weight:700; font-size:16px; color:#1a237e; }}
+        .pick-badge {{ display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; color:#fff; vertical-align:middle; margin-left:6px; }}
+        .pick-score {{ float:right; font-size:20px; font-weight:700; color:#1a237e; }}
+        .pick-metrics {{ font-size:12px; color:#666; margin:4px 0; }}
+        .pick-reasons {{ font-size:11px; color:#888; margin-top:4px; }}
+        .pick-rationale {{ font-size:12px; color:#555; font-style:italic; margin-top:6px; padding-top:6px; border-top:1px solid #e8eaf6; line-height:1.4; }}
       </style>
     </head>
     <body>
@@ -1407,53 +1398,44 @@ def build_html_email(
       <!-- Header -->
       <div class="card">
         <div class="header">
-          <h1>&#x1F4CA; NEPSE AutoScan — {scan_date}</h1>
+          <h1>NEPSE AutoScan &mdash; {scan_date}</h1>
           <div class="sub">Automated ML Stock Scanner &middot; Daily Report</div>
         </div>
 
-        <!-- Summary stats -->
-        <div class="stats-row">
-          <div class="stat">
-            <div class="val">{regime_dot} {regime}</div>
-            <div class="lbl">Market Regime ({regime_conf:.0%})</div>
-          </div>
-          <div class="stat">
-            <div class="val">{n_picks}</div>
-            <div class="lbl">Top Picks</div>
-          </div>
-          <div class="stat">
-            <div class="val">{avg_score:.0f}</div>
-            <div class="lbl">Avg Score</div>
-          </div>
-          <div class="stat">
-            <div class="val">{max_kelly:.1f}%</div>
-            <div class="lbl">Max Kelly</div>
-          </div>
-        </div>
+        <!-- Summary stats (table-based, 2x2 grid for mobile) -->
+        <table style="width:100%;border-collapse:collapse;">
+          <tr>
+            <td style="width:50%;text-align:center;padding:12px 8px;border-right:1px solid #eee;border-bottom:1px solid #eee;">
+              <div style="font-size:18px;font-weight:700;color:#1a237e;">{regime_dot} {regime}</div>
+              <div style="font-size:10px;color:#888;text-transform:uppercase;margin-top:2px;">Regime ({regime_conf:.0%})</div>
+            </td>
+            <td style="width:50%;text-align:center;padding:12px 8px;border-bottom:1px solid #eee;">
+              <div style="font-size:18px;font-weight:700;color:#1a237e;">{n_picks}</div>
+              <div style="font-size:10px;color:#888;text-transform:uppercase;margin-top:2px;">Top Picks</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:center;padding:12px 8px;border-right:1px solid #eee;">
+              <div style="font-size:18px;font-weight:700;color:#1a237e;">{avg_score:.0f}</div>
+              <div style="font-size:10px;color:#888;text-transform:uppercase;margin-top:2px;">Avg Score</div>
+            </td>
+            <td style="text-align:center;padding:12px 8px;">
+              <div style="font-size:18px;font-weight:700;color:#1a237e;">{max_kelly:.1f}%</div>
+              <div style="font-size:10px;color:#888;text-transform:uppercase;margin-top:2px;">Max Kelly</div>
+            </td>
+          </tr>
+        </table>
 
-        <div style="padding:8px 20px;background:#f8f9ff;font-size:12px;color:#666;border-bottom:1px solid #eee">
+        <div style="padding:8px 16px;background:#f8f9ff;font-size:12px;color:#666;border-bottom:1px solid #eee">
           {regime_desc}
         </div>
       </div>
 
-      <!-- Top Picks -->
+      <!-- Top Picks (card-based for mobile) -->
       <div class="card">
         <div class="section">
-          <h2>&#x1F3AF; Top {TOP_N} Picks</h2>
-          <table>
-            <tr>
-              <th style="text-align:center">#</th>
-              <th>Symbol</th>
-              <th style="text-align:center">Signal</th>
-              <th style="text-align:center">Score</th>
-              <th style="text-align:center">TA</th>
-              <th style="text-align:center">ML</th>
-              <th style="text-align:center">GRU</th>
-              <th style="text-align:center">Kelly%</th>
-              <th>Key Signals</th>
-            </tr>
-            {rows_html}
-          </table>
+          <h2>Top {TOP_N} Picks</h2>
+          {rows_html}
         </div>
       </div>
 
@@ -1463,18 +1445,18 @@ def build_html_email(
       <!-- Portfolio -->
       <div class="card">
         <div class="section">
-          <h2>&#x1F4BC; Portfolio Status</h2>
+          <h2>Portfolio Status</h2>
           <table>
-            <tr>
-              <th>Symbol</th><th style="text-align:right">Shares</th>
-              <th style="text-align:right">WACC</th><th style="text-align:right">LTP</th>
-              <th style="text-align:right">P&amp;L%</th><th style="text-align:right">P&amp;L (Rs)</th>
+            <tr style="background:#f5f6fa;">
+              <th style="padding:6px 8px;text-align:left;font-size:11px;color:#555;">Stock</th>
+              <th style="padding:6px 8px;text-align:right;font-size:11px;color:#555;">LTP</th>
+              <th style="padding:6px 8px;text-align:right;font-size:11px;color:#555;">P&amp;L</th>
             </tr>
             {port_rows}
             <tr class="port-total">
-              <td colspan="4">Total Portfolio</td>
-              <td style="text-align:right" class="{"pnl-pos" if total_pnl >= 0 else "pnl-neg"}">{total_pct:+.1f}%</td>
-              <td style="text-align:right" class="{"pnl-pos" if total_pnl >= 0 else "pnl-neg"}">Rs {total_pnl:,.0f}</td>
+              <td style="padding:8px;font-weight:700;">Total</td>
+              <td style="padding:8px;text-align:right;"></td>
+              <td style="padding:8px;text-align:right;font-weight:700;color:{total_col};">{total_pct:+.1f}% (Rs {total_pnl:,.0f})</td>
             </tr>
           </table>
         </div>
