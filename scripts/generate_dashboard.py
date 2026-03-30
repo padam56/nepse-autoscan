@@ -216,6 +216,11 @@ def generate():
     positions = paper.get("positions", {})
     equity_curve = paper.get("equity_curve", [])
     initial = 10_000_000
+    # Update paper positions with live prices
+    for sym, pos in positions.items():
+        live_ltp = latest.get(sym, {}).get("lp", 0)
+        if live_ltp > 0:
+            pos["current_price"] = live_ltp
     invested = sum(p["shares"] * p.get("current_price", p["avg_cost"]) for p in positions.values())
     equity = cash + invested
     total_return = (equity / initial - 1) * 100
@@ -419,14 +424,17 @@ def generate():
     if not ai_cards_html:
         ai_cards_html = '<div class="glass-card rounded-2xl p-8 col-span-3 text-center text-outline">No stocks currently match AI screening criteria (RSI 45-65, EMA aligned, moderate momentum)</div>'
 
-    # Portfolio rows
+    # Portfolio rows — use live prices from `latest` (has Sharesansar data merged)
     port_rows_html = ""
     port_total_inv = 0
     port_total_cur = 0
     for pos in portfolio_holdings:
         sym = pos["symbol"]
-        recs = all_stocks.get(sym, [])
-        ltp = recs[-1].get("lp", pos["wacc"]) if recs else pos["wacc"]
+        live_d = latest.get(sym, {})
+        ltp = live_d.get("lp", 0)
+        if ltp <= 0:
+            recs = all_stocks.get(sym, [])
+            ltp = recs[-1].get("lp", pos["wacc"]) if recs else pos["wacc"]
         pnl_pct = (ltp / pos["wacc"] - 1) * 100
         pnl_rs = (ltp - pos["wacc"]) * pos["shares"]
         port_total_inv += pos["wacc"] * pos["shares"]
@@ -1436,7 +1444,25 @@ header, main, footer, .tab-content {{ position: relative; z-index: 10; pointer-e
 
 <!-- My Portfolio -->
 <section>
-  <h2 class="text-2xl font-headline font-black mb-6">My Portfolio</h2>
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-6">
+    <h2 class="text-2xl font-headline font-black">My Portfolio</h2>
+    <div class="flex gap-4">
+      <div class="text-right">
+        <p class="text-[10px] font-label text-outline uppercase tracking-widest">Invested</p>
+        <p class="text-lg font-headline font-bold">Rs {port_total_inv:,.0f}</p>
+      </div>
+      <div class="w-px h-10 bg-outline-variant/20"></div>
+      <div class="text-right">
+        <p class="text-[10px] font-label text-outline uppercase tracking-widest">Current</p>
+        <p class="text-lg font-headline font-bold">Rs {port_total_cur:,.0f}</p>
+      </div>
+      <div class="w-px h-10 bg-outline-variant/20"></div>
+      <div class="text-right">
+        <p class="text-[10px] font-label text-outline uppercase tracking-widest">P&L</p>
+        <p class="text-lg font-headline font-bold {port_cls}">Rs {port_pnl:+,.0f} ({port_pct:+.1f}%)</p>
+      </div>
+    </div>
+  </div>
   <div class="bg-surface-container rounded-2xl overflow-hidden">
     <table class="w-full text-left text-sm font-label">
       <thead class="text-outline border-b border-outline-variant/20 bg-surface-container-high">
@@ -1445,7 +1471,7 @@ header, main, footer, .tab-content {{ position: relative; z-index: 10; pointer-e
       <tbody class="divide-y divide-outline-variant/10">{port_rows_html}</tbody>
       <tfoot>
         <tr class="font-bold border-t-2 border-outline-variant/20">
-          <td class="px-6 py-4" colspan="3">Total Portfolio</td>
+          <td class="px-6 py-4" colspan="3">Total</td>
           <td class="px-6 py-4 text-right">Rs {port_total_cur:,.0f}</td>
           <td class="px-6 py-4 text-right {port_cls}">{port_pct:+.1f}%</td>
         </tr>
