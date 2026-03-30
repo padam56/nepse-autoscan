@@ -225,9 +225,9 @@ def generate():
     equity = cash + invested
     total_return = (equity / initial - 1) * 100
 
-    closed = [t for t in trades if t.get("return_pct") is not None]
+    closed = [t for t in trades if t.get("pnl_pct") is not None]
     n_trades = len(closed)
-    wins = [t for t in closed if t.get("return_pct", 0) > 0]
+    wins = [t for t in closed if t.get("pnl_pct", 0) > 0]
     win_rate = len(wins) / n_trades * 100 if n_trades > 0 else 0
     n_wins = len(wins)
     n_losses = n_trades - n_wins
@@ -298,7 +298,7 @@ def generate():
     # Closed trades
     trade_rows_html = ""
     for t in closed[-5:][::-1]:
-        ret = t.get("return_pct", 0)
+        ret = t.get("pnl_pct", 0)
         cls = "text-tertiary" if ret > 0 else "text-error"
         sign = "+" if ret > 0 else ""
         trade_rows_html += f'''<tr class="hover:bg-surface-container-highest/30 transition-colors">
@@ -539,15 +539,15 @@ def generate():
         all_stock_rows += f'''<tr class="stock-row hover:bg-[#1a1d28] transition-colors duration-150 text-[12px]" data-sym="{sym.lower()}" data-sec="{sec.lower()}" style="border-bottom:1px solid rgba(66,71,83,0.06)" onclick="toggleDetail(this, '{sym}')">
             <td class="px-4 py-2.5 font-bold text-[13px] text-on-surface">{sym}</td>
             <td class="px-3 py-2.5 text-outline text-[11px] hidden sm:table-cell">{sec}</td>
-            <td class="px-3 py-2.5 r font-medium">{lp:,.1f}</td>
-            <td class="px-3 py-2.5 r {cls} font-bold">{pc:+.2f}%</td>
+            <td class="px-3 py-2.5 text-right font-medium">{lp:,.1f}</td>
+            <td class="px-3 py-2.5 text-right {cls} font-bold">{pc:+.2f}%</td>
             <td class="px-3 py-2.5 hidden sm:table-cell spark-cell"{spark_attr}></td>
-            <td class="px-3 py-2.5 r hidden md:table-cell text-on-surface-variant">{op:,.1f}</td>
-            <td class="px-3 py-2.5 r hidden md:table-cell text-on-surface-variant">{h:,.1f}</td>
-            <td class="px-3 py-2.5 r hidden md:table-cell text-on-surface-variant">{l:,.1f}</td>
-            <td class="px-3 py-2.5 r hidden lg:table-cell text-on-surface-variant">{vol:,.0f}</td>
-            <td class="px-3 py-2.5 r hidden lg:table-cell text-primary font-medium">{ts}</td>
-            <td class="px-3 py-2.5 r {rsi_cls} font-bold">{rsi:.0f}</td>
+            <td class="px-3 py-2.5 text-right hidden md:table-cell text-on-surface-variant">{op:,.1f}</td>
+            <td class="px-3 py-2.5 text-right hidden md:table-cell text-on-surface-variant">{h:,.1f}</td>
+            <td class="px-3 py-2.5 text-right hidden md:table-cell text-on-surface-variant">{l:,.1f}</td>
+            <td class="px-3 py-2.5 text-right hidden lg:table-cell text-on-surface-variant">{vol:,.0f}</td>
+            <td class="px-3 py-2.5 text-right hidden lg:table-cell text-primary font-medium">{ts}</td>
+            <td class="px-3 py-2.5 text-right {rsi_cls} font-bold">{rsi:.0f}</td>
             <td class="px-3 py-2.5">{tag_html}</td>
         </tr>'''
 

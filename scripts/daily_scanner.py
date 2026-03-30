@@ -1543,6 +1543,7 @@ def run_scanner(
 
     # ── Step 2: Feature engineering ───────────────────────────────────────────
     print("[2/9] Computing features...")
+    engine = None
     N_FEATURES_ALL_VAL = len(ALL_FEATURE_NAMES) if FEATURES_AVAILABLE else 5
     if FEATURES_AVAILABLE:
         engine = FeatureEngine(SECTORS_FILE, CALENDAR_FILE)

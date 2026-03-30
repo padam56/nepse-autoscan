@@ -252,11 +252,19 @@ def analyze_with_claude(headlines: List[dict], regime: str = "UNKNOWN") -> Optio
         # Parse JSON — strip markdown code blocks, then extract JSON object
         import re
         text = re.sub(r'```json\s*|\s*```', '', text).strip()
-        json_match = re.search(r'\{[\s\S]*\}', text)
-        if json_match:
-            text = json_match.group(0)
-
-        analysis = json.loads(text)
+        # Find the first valid JSON object by trying progressively from each '{'
+        start = text.find('{')
+        analysis = None
+        if start >= 0:
+            for end in range(len(text) - 1, start, -1):
+                if text[end] == '}':
+                    try:
+                        analysis = json.loads(text[start:end + 1])
+                        break
+                    except json.JSONDecodeError:
+                        continue
+        if analysis is None:
+            analysis = json.loads(text)
         analysis["analyzed_at"] = datetime.now(NPT).isoformat()
         analysis["headline_count"] = len(headlines)
 

@@ -48,14 +48,14 @@ def generate_performance_md(state, trades):
     total_return = (equity / initial - 1) * 100
 
     # Trade stats
-    closed_trades = [t for t in trades if t.get('return_pct') is not None]
+    closed_trades = [t for t in trades if t.get('pnl_pct') is not None]
     n_trades = len(closed_trades)
-    wins = [t for t in closed_trades if t.get('return_pct', 0) > 0]
-    losses = [t for t in closed_trades if t.get('return_pct', 0) <= 0]
+    wins = [t for t in closed_trades if t.get('pnl_pct', 0) > 0]
+    losses = [t for t in closed_trades if t.get('pnl_pct', 0) <= 0]
     win_rate = len(wins) / n_trades * 100 if n_trades > 0 else 0
 
-    avg_win = sum(t['return_pct'] for t in wins) / len(wins) if wins else 0
-    avg_loss = sum(t['return_pct'] for t in losses) / len(losses) if losses else 0
+    avg_win = sum(t['pnl_pct'] for t in wins) / len(wins) if wins else 0
+    avg_loss = sum(t['pnl_pct'] for t in losses) / len(losses) if losses else 0
 
     # Max drawdown from equity curve
     max_dd = 0
@@ -110,7 +110,7 @@ def generate_performance_md(state, trades):
             trade_table += "| %s | %s | %s | %s%% | %sd |\n" % (
                 t.get('exit_date', '?'), t.get('symbol', '?'),
                 t.get('reason', 'signal').upper(),
-                f"{t.get('return_pct', 0):+.1f}",
+                f"{t.get('pnl_pct', 0):+.1f}",
                 t.get('hold_days', '?'))
 
     md = f"""# Paper Trading Performance
@@ -208,7 +208,7 @@ def git_commit_and_push():
         last_msg = subprocess.run(['git', 'log', '-1', '--format=%s'],
                                   capture_output=True, text=True).stdout.strip()
         if last_msg.startswith(AUTO_COMMIT_PREFIX):
-            subprocess.run(['git', 'commit', '--amend', '--no-edit',
+            subprocess.run(['git', 'commit', '--amend',
                             '-m', f'{AUTO_COMMIT_PREFIX} ({today})'],
                            check=True, capture_output=True)
         else:

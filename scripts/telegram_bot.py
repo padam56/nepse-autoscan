@@ -32,15 +32,19 @@ from dotenv import load_dotenv
 
 # ── Path setup ───────────────────────────────────────────────────────────────
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "scripts"))
 load_dotenv(ROOT / ".env")
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
 try:
-    from config import PORTFOLIO
+    from portfolio.config import PORTFOLIO
 except ImportError:
-    PORTFOLIO = {}
+    try:
+        from config import PORTFOLIO
+    except ImportError:
+        PORTFOLIO = {}
 try:
     from config import HEADERS as _cfg_headers
     HEADERS = _cfg_headers
