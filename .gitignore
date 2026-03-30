@@ -1,0 +1,43 @@
+# Never commit these
+.env
+*.env
+
+# Data (large/generated)
+data/models/
+data/price_history/
+data/gru_training.log
+data/market_summary.json
+logs/
+reports/
+
+# Generated runtime data (personal/ephemeral)
+data/paper_portfolio.json
+data/paper_trades.json
+data/signal_log.json
+data/model_registry.json
+data/news_sentiment.json
+data/fundamentals.json
+data/selected_features.json
+data/live_prices_cache.json
+data/telegram_offset.json
+data/telegram_alert_state.json
+data/corporate_events.json
+data/promoter_holdings.json
+data/portfolio_comparison.json
+
+# Python
+venv/
+lib/
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+
+# IDE / local config
+.vscode/
+.claude/
+
+# Screenshots
+*.png
+*.nfs*

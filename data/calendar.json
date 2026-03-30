@@ -1,0 +1,148 @@
+{
+  "events": [
+    {"date": "2023-04-14", "event": "NEPALI_NEW_YEAR", "impact": "BULLISH", "days_effect": 5},
+    {"date": "2023-05-29", "event": "BUDGET_DAY", "impact": "VOLATILE", "days_effect": 7},
+    {"date": "2023-06-15", "event": "NRB_MONETARY_POLICY", "impact": "VOLATILE", "days_effect": 5},
+    {"date": "2023-07-17", "event": "FISCAL_YEAR_START", "impact": "NEUTRAL", "days_effect": 3},
+    {"date": "2023-07-16", "event": "FISCAL_YEAR_END", "impact": "BEARISH", "days_effect": 5},
+    {"date": "2023-10-14", "event": "DASHAIN_GHATASTHAPANA", "impact": "BULLISH", "days_effect": 10},
+    {"date": "2023-10-24", "event": "DASHAIN_VIJAYA_DASHAMI", "impact": "BULLISH", "days_effect": 3},
+    {"date": "2023-11-12", "event": "TIHAR_LAXMI_PUJA", "impact": "BULLISH", "days_effect": 5},
+    {"date": "2023-12-01", "event": "NRB_MONETARY_POLICY_REVIEW", "impact": "VOLATILE", "days_effect": 5},
+    {"date": "2024-04-14", "event": "NEPALI_NEW_YEAR", "impact": "BULLISH", "days_effect": 5},
+    {"date": "2024-05-29", "event": "BUDGET_DAY", "impact": "VOLATILE", "days_effect": 7},
+    {"date": "2024-06-20", "event": "NRB_MONETARY_POLICY", "impact": "VOLATILE", "days_effect": 5},
+    {"date": "2024-07-16", "event": "FISCAL_YEAR_END", "impact": "BEARISH", "days_effect": 5},
+    {"date": "2024-07-17", "event": "FISCAL_YEAR_START", "impact": "NEUTRAL", "days_effect": 3},
+    {"date": "2024-10-02", "event": "DASHAIN_GHATASTHAPANA", "impact": "BULLISH", "days_effect": 10},
+    {"date": "2024-10-12", "event": "DASHAIN_VIJAYA_DASHAMI", "impact": "BULLISH", "days_effect": 3},
+    {"date": "2024-11-01", "event": "TIHAR_LAXMI_PUJA", "impact": "BULLISH", "days_effect": 5},
+    {"date": "2024-12-01", "event": "NRB_MONETARY_POLICY_REVIEW", "impact": "VOLATILE", "days_effect": 5},
+    {"date": "2025-04-14", "event": "NEPALI_NEW_YEAR", "impact": "BULLISH", "days_effect": 5},
+    {"date": "2025-05-29", "event": "BUDGET_DAY", "impact": "VOLATILE", "days_effect": 7},
+    {"date": "2025-06-20", "event": "NRB_MONETARY_POLICY", "impact": "VOLATILE", "days_effect": 5},
+    {"date": "2025-07-16", "event": "FISCAL_YEAR_END", "impact": "BEARISH", "days_effect": 5},
+    {"date": "2025-07-17", "event": "FISCAL_YEAR_START", "impact": "NEUTRAL", "days_effect": 3},
+    {"date": "2025-10-21", "event": "DASHAIN_GHATASTHAPANA", "impact": "BULLISH", "days_effect": 10},
+    {"date": "2025-10-31", "event": "DASHAIN_VIJAYA_DASHAMI", "impact": "BULLISH", "days_effect": 3},
+    {"date": "2025-11-19", "event": "TIHAR_LAXMI_PUJA", "impact": "BULLISH", "days_effect": 5},
+    {"date": "2025-12-01", "event": "NRB_MONETARY_POLICY_REVIEW", "impact": "VOLATILE", "days_effect": 5},
+    {"date": "2026-04-14", "event": "NEPALI_NEW_YEAR", "impact": "BULLISH", "days_effect": 5},
+    {"date": "2026-05-29", "event": "BUDGET_DAY", "impact": "VOLATILE", "days_effect": 7},
+    {"date": "2026-06-20", "event": "NRB_MONETARY_POLICY", "impact": "VOLATILE", "days_effect": 5},
+    {"date": "2026-07-16", "event": "FISCAL_YEAR_END", "impact": "BEARISH", "days_effect": 5},
+    {"date": "2026-07-17", "event": "FISCAL_YEAR_START", "impact": "NEUTRAL", "days_effect": 3},
+    {"date": "2026-10-10", "event": "DASHAIN_GHATASTHAPANA", "impact": "BULLISH", "days_effect": 10},
+    {"date": "2026-10-20", "event": "DASHAIN_VIJAYA_DASHAMI", "impact": "BULLISH", "days_effect": 3},
+    {"date": "2026-11-08", "event": "TIHAR_LAXMI_PUJA", "impact": "BULLISH", "days_effect": 5},
+    {"date": "2026-12-01", "event": "NRB_MONETARY_POLICY_REVIEW", "impact": "VOLATILE", "days_effect": 5}
+  ],
+  "seasonal_patterns": {
+    "DASHAIN_SEASON": {
+      "months_gregorian": [9, 10],
+      "nepali_months": [6, 7],
+      "bias": "BULLISH",
+      "description": "Remittance inflows drive retail buying; festive sentiment lifts broader market"
+    },
+    "BUDGET_SEASON": {
+      "months_gregorian": [5, 6],
+      "nepali_months": [2, 3],
+      "bias": "VOLATILE",
+      "description": "Pre-budget speculation then reality check; sector rotation based on policy announcements"
+    },
+    "FY_END": {
+      "months_gregorian": [6, 7],
+      "nepali_months": [3, 4],
+      "bias": "BEARISH",
+      "description": "Institutional selling for book closure; liquidity tightening in banking sector"
+    },
+    "IPO_SEASON": {
+      "months_gregorian": [11, 12, 1, 2],
+      "nepali_months": [8, 9, 10, 11],
+      "bias": "NEUTRAL",
+      "description": "High IPO activity absorbs market liquidity; secondary market may face pressure"
+    },
+    "TIHAR_SEASON": {
+      "months_gregorian": [10, 11],
+      "nepali_months": [7, 8],
+      "bias": "BULLISH",
+      "description": "Secondary festive rally; consumer and banking stocks tend to outperform"
+    },
+    "NRB_POLICY": {
+      "months_gregorian": [6, 12],
+      "nepali_months": [3, 9],
+      "bias": "VOLATILE",
+      "description": "Nepal Rastra Bank monetary policy announcement; banking sector highly sensitive to CRR/SLR changes"
+    },
+    "MONSOON_HYDRO": {
+      "months_gregorian": [6, 7, 8, 9],
+      "nepali_months": [3, 4, 5, 6],
+      "bias": "BULLISH_HYDRO",
+      "description": "Hydropower output peaks during monsoon; hydro sector outperforms; energy exports increase"
+    },
+    "WINTER_DRY": {
+      "months_gregorian": [12, 1, 2, 3],
+      "nepali_months": [9, 10, 11, 12],
+      "bias": "BEARISH_HYDRO",
+      "description": "Hydropower output drops in dry season due to reduced river flow; hydro sector underperforms"
+    },
+    "PRE_ELECTION": {
+      "months_gregorian": [10, 11],
+      "nepali_months": [7, 8],
+      "bias": "VOLATILE",
+      "description": "Pre-election uncertainty causes institutional caution; infrastructure stocks may see speculative interest"
+    },
+    "POST_ELECTION": {
+      "months_gregorian": [12, 1],
+      "nepali_months": [9, 10],
+      "bias": "BULLISH",
+      "description": "Post-election clarity typically triggers relief rally; new government policy expectations drive optimism"
+    }
+  },
+  "calendar_features": {
+    "dashain_months": [9, 10],
+    "tihar_months": [10, 11],
+    "budget_month": 5,
+    "fy_end_months": [6, 7],
+    "new_year_month": 4,
+    "nrb_policy_months": [6, 12],
+    "monsoon_months": [6, 7, 8, 9],
+    "winter_months": [12, 1, 2, 3],
+    "pre_election_months": [10, 11],
+    "ipo_season_months": [11, 12, 1, 2]
+  },
+  "nepali_fiscal_year": {
+    "start_month_gregorian": 7,
+    "start_day_gregorian": 17,
+    "start_nepali_month": "Shrawan",
+    "end_month_gregorian": 7,
+    "end_day_gregorian": 16,
+    "end_nepali_month": "Ashadh",
+    "note": "Nepal FY runs Shrawan 1 to Ashadh end (approx mid-July to mid-July)"
+  },
+  "dashain_approximate_dates": {
+    "note": "Dashain falls in Ashwin/Kartik (Nepali calendar); Gregorian dates shift annually based on lunar calendar",
+    "ghatasthapana_approx": "1st day of bright fortnight in Ashwin (typically late Sep to mid Oct)",
+    "vijaya_dashami_approx": "10th day (Dashami) of bright fortnight (typically mid Oct)",
+    "2023": {"ghatasthapana": "2023-10-14", "vijaya_dashami": "2023-10-24"},
+    "2024": {"ghatasthapana": "2024-10-02", "vijaya_dashami": "2024-10-12"},
+    "2025": {"ghatasthapana": "2025-10-21", "vijaya_dashami": "2025-10-31"},
+    "2026": {"ghatasthapana": "2026-10-10", "vijaya_dashami": "2026-10-20"}
+  },
+  "tihar_approximate_dates": {
+    "note": "Tihar (Deepawali) falls ~20 days after Dashain; Laxmi Puja is the main market-relevant day",
+    "2023": {"laxmi_puja": "2023-11-12"},
+    "2024": {"laxmi_puja": "2024-11-01"},
+    "2025": {"laxmi_puja": "2025-11-19"},
+    "2026": {"laxmi_puja": "2026-11-08"}
+  },
+  "nepali_new_year": {
+    "note": "Baisakh 1 falls on April 14 (occasionally April 13); consistent Gregorian mapping",
+    "dates": {
+      "2023": "2023-04-14",
+      "2024": "2024-04-14",
+      "2025": "2025-04-14",
+      "2026": "2026-04-14"
+    }
+  }
+}

@@ -1,0 +1,364 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background:#f0f2f5; margin:0; padding:0; }
+        .wrap { max-width:720px; margin:16px auto; }
+        .card { background:#fff; border-radius:12px; box-shadow:0 1px 6px rgba(0,0,0,0.1); padding:0; margin-bottom:16px; overflow:hidden; }
+        .header { background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%); color:#fff; padding:20px 24px; }
+        .header h1 { margin:0; font-size:20px; font-weight:600; letter-spacing:0.3px; }
+        .header .sub { color:#b3c0ff; font-size:13px; margin-top:4px; }
+        .stats-row { display:flex; gap:0; border-bottom:1px solid #eee; }
+        .stat { flex:1; text-align:center; padding:14px 8px; border-right:1px solid #eee; }
+        .stat:last-child { border-right:none; }
+        .stat .val { font-size:22px; font-weight:700; color:#1a237e; }
+        .stat .lbl { font-size:11px; color:#888; text-transform:uppercase; letter-spacing:0.5px; margin-top:2px; }
+        .section { padding:16px 20px; }
+        .section h2 { font-size:15px; color:#333; margin:0 0 12px 0; font-weight:600; }
+        table { width:100%; border-collapse:collapse; }
+        th { background:#f5f6fa; color:#555; padding:8px 10px; text-align:left; font-size:11px;
+              text-transform:uppercase; letter-spacing:0.5px; border-bottom:2px solid #e0e0e0; }
+        td { padding:8px 10px; border-bottom:1px solid #f0f0f0; font-size:13px; }
+        .rank { font-weight:700; color:#1a237e; text-align:center; }
+        .sym { font-weight:700; font-size:14px; }
+        .badge { display:inline-block; padding:3px 10px; border-radius:12px; font-size:11px;
+                  font-weight:600; color:#fff; letter-spacing:0.3px; }
+        .rationale { font-size:12px; color:#555; padding:6px 10px 6px 40px; border-bottom:1px solid #f0f0f0;
+                      font-style:italic; line-height:1.4; background:#fafbff; }
+        .pnl-pos { color:#1b5e20; font-weight:600; }
+        .pnl-neg { color:#c62828; font-weight:600; }
+        .port-total { font-weight:700; background:#f5f6fa; }
+        .footer { text-align:center; padding:16px; color:#999; font-size:11px; line-height:1.6; }
+        .regime-pill { display:inline-block; padding:4px 14px; border-radius:16px; font-weight:600;
+                        font-size:12px; color:#fff; background:#00c853; }
+      </style>
+    </head>
+    <body>
+    <div class="wrap">
+
+      <!-- Header -->
+      <div class="card">
+        <div class="header">
+          <h1>&#x1F4CA; NEPSE AutoScan — 2026-03-29</h1>
+          <div class="sub">Automated ML Stock Scanner &middot; Daily Report</div>
+        </div>
+
+        <!-- Summary stats -->
+        <div class="stats-row">
+          <div class="stat">
+            <div class="val">&#x1F7E2; BULL</div>
+            <div class="lbl">Market Regime (100%)</div>
+          </div>
+          <div class="stat">
+            <div class="val">10</div>
+            <div class="lbl">Top Picks</div>
+          </div>
+          <div class="stat">
+            <div class="val">77</div>
+            <div class="lbl">Avg Score</div>
+          </div>
+          <div class="stat">
+            <div class="val">10.3%</div>
+            <div class="lbl">Max Kelly</div>
+          </div>
+        </div>
+
+        <div style="padding:8px 20px;background:#f8f9ff;font-size:12px;color:#666;border-bottom:1px solid #eee">
+          Bullish — strong breadth, risk on
+        </div>
+      </div>
+
+      <!-- Top Picks -->
+      <div class="card">
+        <div class="section">
+          <h2>&#x1F3AF; Top 10 Picks</h2>
+          <table>
+            <tr>
+              <th style="text-align:center">#</th>
+              <th>Symbol</th>
+              <th style="text-align:center">Signal</th>
+              <th style="text-align:center">Score</th>
+              <th style="text-align:center">TA</th>
+              <th style="text-align:center">ML</th>
+              <th style="text-align:center">GRU</th>
+              <th style="text-align:center">Kelly%</th>
+              <th>Key Signals</th>
+            </tr>
+            
+        <tr>
+          <td class="rank">1</td>
+          <td class="sym">MSMBS</td>
+          <td style="text-align:center"><span class="badge" style="background:#00c853">STRONG BUY</span></td>
+          <td style="text-align:center;font-weight:700;font-size:15px">82</td>
+          <td style="text-align:center">93</td>
+          <td style="text-align:center">50</td>
+          <td style="text-align:center">–</td>
+          <td style="text-align:center;font-weight:600">10.3%</td>
+          <td style="font-size:11px;color:#666">RSI bullish at 87 · Up 31.6% this week · EMA8 > EMA21 > EMA55 (aligned) · Above SMA200 (+66.7%)</td>
+        </tr>
+        <tr><td colspan='9' class='rationale'>&#x1F4AC; MSMBS is strongly positioned for a short-term trade with its RSI at 87 indicating strong upward momentum, supported by a bullish EMA alignment and trading well above the SMA200. However, the high RSI suggests potential for near-term correction or pullback, posing a key risk to this trade.</td></tr>
+        
+        <tr>
+          <td class="rank">2</td>
+          <td class="sym">NICBF</td>
+          <td style="text-align:center"><span class="badge" style="background:#00c853">STRONG BUY</span></td>
+          <td style="text-align:center;font-weight:700;font-size:15px">79</td>
+          <td style="text-align:center">90</td>
+          <td style="text-align:center">47</td>
+          <td style="text-align:center">–</td>
+          <td style="text-align:center;font-weight:600">9.8%</td>
+          <td style="font-size:11px;color:#666">RSI bullish at 65 · Up 10.1% this week · EMA8 > EMA21 > EMA55 (aligned) · Above SMA200 (+13.5%)</td>
+        </tr>
+        <tr><td colspan='9' class='rationale'>&#x1F4AC; NICBF's strong buy signal is supported by its bullish RSI at 65, a weekly gain of 10.1%, and an aligned EMA stack (EMA8 > EMA21 > EMA55) above the SMA200 with a 13.5% premium, indicating sustained upward momentum in a bull market. Key risk: A sudden shift in market sentiment or unexpected company-specific news could reverse current trends quickly.</td></tr>
+        
+        <tr>
+          <td class="rank">3</td>
+          <td class="sym">CBLD88</td>
+          <td style="text-align:center"><span class="badge" style="background:#00c853">STRONG BUY</span></td>
+          <td style="text-align:center;font-weight:700;font-size:15px">78</td>
+          <td style="text-align:center">89</td>
+          <td style="text-align:center">49</td>
+          <td style="text-align:center">–</td>
+          <td style="text-align:center;font-weight:600">9.7%</td>
+          <td style="font-size:11px;color:#666">Up 4.4% this week · EMA8 > EMA21 > EMA55 (aligned) · Above SMA200 (+6.6%) · MACD bullish crossover</td>
+        </tr>
+        <tr><td colspan='9' class='rationale'>&#x1F4AC; CBLD88's strong technical alignment with EMAs and a bullish MACD crossover, coupled with its position above the SMA200 and recent positive returns, suggests continued upward momentum in a bull market. Key risk includes potential overextension if the RSI approaches 70, indicating possible near-term correction.</td></tr>
+        
+        <tr>
+          <td class="rank">4</td>
+          <td class="sym">ANLB</td>
+          <td style="text-align:center"><span class="badge" style="background:#00c853">STRONG BUY</span></td>
+          <td style="text-align:center;font-weight:700;font-size:15px">76</td>
+          <td style="text-align:center">89</td>
+          <td style="text-align:center">47</td>
+          <td style="text-align:center">–</td>
+          <td style="text-align:center;font-weight:600">9.5%</td>
+          <td style="font-size:11px;color:#666">RSI bullish at 62 · EMA8 > EMA21 > EMA55 (aligned) · Above SMA200 (+11.8%) · MACD bullish crossover</td>
+        </tr>
+        <tr><td colspan='9' class='rationale'>&#x1F4AC; ANLB's strong technical indicators, including a bullish RSI at 62, aligned EMAs, and a positive MACD crossover, suggest continued upward momentum. The stock is also trading above its SMA200 with a significant buffer (+11.8%), indicating sustained buying pressure. Key risk: A sudden market shift could reverse the current trend quickly.</td></tr>
+        
+        <tr>
+          <td class="rank">5</td>
+          <td class="sym">SANVI</td>
+          <td style="text-align:center"><span class="badge" style="background:#00c853">STRONG BUY</span></td>
+          <td style="text-align:center;font-weight:700;font-size:15px">76</td>
+          <td style="text-align:center">84</td>
+          <td style="text-align:center">49</td>
+          <td style="text-align:center">–</td>
+          <td style="text-align:center;font-weight:600">9.5%</td>
+          <td style="font-size:11px;color:#666">RSI bullish at 58 · Up 6.1% this week · EMA8 > EMA21 > EMA55 (aligned) · Above SMA200 (+22.0%)</td>
+        </tr>
+        <tr><td colspan='9' class='rationale'>&#x1F4AC; SANVI's strong performance this week with a 6.1% return and bullish RSI at 58 indicates ongoing momentum, supported by its EMAs being well-aligned above the SMA200. However, the potential for near-term profit-taking exists given the stock's recent gains, posing a risk to short-term traders.</td></tr>
+        
+        <tr>
+          <td class="rank">6</td>
+          <td class="sym">PDBL</td>
+          <td style="text-align:center"><span class="badge" style="background:#00c853">STRONG BUY</span></td>
+          <td style="text-align:center;font-weight:700;font-size:15px">76</td>
+          <td style="text-align:center">89</td>
+          <td style="text-align:center">44</td>
+          <td style="text-align:center">–</td>
+          <td style="text-align:center;font-weight:600">9.5%</td>
+          <td style="font-size:11px;color:#666">RSI bullish at 60 · Up 11.0% this week · EMA8 > EMA21 > EMA55 (aligned) · Above SMA200 (+30.0%)</td>
+        </tr>
+        <tr><td colspan='9' class='rationale'>&#x1F4AC; PDBL's strong technical indicators, including an RSI of 60, positive 5-day return of 11%, and aligned EMAs above the SMA200, suggest continued upward momentum in a bull market regime. However, the stock’s current position slightly overbought at RSI 60 poses a risk of near-term correction if buying pressure wanes.</td></tr>
+        
+        <tr>
+          <td class="rank">7</td>
+          <td class="sym">NMB50</td>
+          <td style="text-align:center"><span class="badge" style="background:#00c853">STRONG BUY</span></td>
+          <td style="text-align:center;font-weight:700;font-size:15px">76</td>
+          <td style="text-align:center">77</td>
+          <td style="text-align:center">56</td>
+          <td style="text-align:center">–</td>
+          <td style="text-align:center;font-weight:600">9.5%</td>
+          <td style="font-size:11px;color:#666">RSI bullish at 65 · EMA8 > EMA21 > EMA55 (aligned) · Above SMA200 (+1.4%) · MACD bullish crossover</td>
+        </tr>
+        
+        
+        <tr>
+          <td class="rank">8</td>
+          <td class="sym">UNHPL</td>
+          <td style="text-align:center"><span class="badge" style="background:#00c853">STRONG BUY</span></td>
+          <td style="text-align:center;font-weight:700;font-size:15px">76</td>
+          <td style="text-align:center">89</td>
+          <td style="text-align:center">43</td>
+          <td style="text-align:center">–</td>
+          <td style="text-align:center;font-weight:600">9.5%</td>
+          <td style="font-size:11px;color:#666">RSI bullish at 74 · Up 7.7% this week · EMA8 > EMA21 > EMA55 (aligned) · Above SMA200 (+24.8%)</td>
+        </tr>
+        
+        
+        <tr>
+          <td class="rank">9</td>
+          <td class="sym">SJCL</td>
+          <td style="text-align:center"><span class="badge" style="background:#00c853">STRONG BUY</span></td>
+          <td style="text-align:center;font-weight:700;font-size:15px">76</td>
+          <td style="text-align:center">86</td>
+          <td style="text-align:center">46</td>
+          <td style="text-align:center">–</td>
+          <td style="text-align:center;font-weight:600">9.5%</td>
+          <td style="font-size:11px;color:#666">RSI bullish at 71 · Up 2.7% this week · EMA8 > EMA21 > EMA55 (aligned) · Above SMA200 (+15.2%)</td>
+        </tr>
+        
+        
+        <tr>
+          <td class="rank">10</td>
+          <td class="sym">NTC</td>
+          <td style="text-align:center"><span class="badge" style="background:#00c853">STRONG BUY</span></td>
+          <td style="text-align:center;font-weight:700;font-size:15px">74</td>
+          <td style="text-align:center">77</td>
+          <td style="text-align:center">54</td>
+          <td style="text-align:center">–</td>
+          <td style="text-align:center;font-weight:600">9.3%</td>
+          <td style="font-size:11px;color:#666">RSI bullish at 63 · EMA8 > EMA21 > EMA55 (aligned) · Above SMA200 (+4.6%) · MACD bullish crossover</td>
+        </tr>
+        
+        
+          </table>
+        </div>
+      </div>
+
+      <!-- AI Top 3 Picks -->
+      
+            <div class="card">
+              <div class="section">
+                <h2>AI Top 3 -- Ideal Entry Zone (RSI 45-65, EMA Aligned)</h2>
+                <p style="font-size:12px;color:#666;margin:0 0 8px 0">
+                  Stocks with moderate RSI, aligned EMAs, and positive momentum -- optimal entry conditions.
+                </p>
+                <table>
+                  <tr><th style="text-align:center">#</th><th>Symbol</th>
+                      <th style="text-align:center">RSI</th>
+                      <th style="text-align:center">5d Ret</th>
+                      <th style="text-align:center">Vol Ratio</th>
+                      <th style="text-align:center">TA Score</th></tr>
+                  <tr><td style='text-align:center;font-weight:700;color:#1a237e'>1</td><td style='font-weight:700'>ANLB</td><td style='text-align:center'>62</td><td style='text-align:center'>+1.0%</td><td style='text-align:center'>5.3x</td><td style='text-align:center;font-weight:600'>89</td></tr><tr><td style='text-align:center;font-weight:700;color:#1a237e'>2</td><td style='font-weight:700'>CBLD88</td><td style='text-align:center'>53</td><td style='text-align:center'>+4.4%</td><td style='text-align:center'>2.3x</td><td style='text-align:center;font-weight:600'>89</td></tr><tr><td style='text-align:center;font-weight:700;color:#1a237e'>3</td><td style='font-weight:700'>NICGF2</td><td style='text-align:center'>62</td><td style='text-align:center'>+1.7%</td><td style='text-align:center'>3.0x</td><td style='text-align:center;font-weight:600'>87</td></tr>
+                </table>
+              </div>
+            </div>
+            
+
+      <!-- Portfolio -->
+      <div class="card">
+        <div class="section">
+          <h2>&#x1F4BC; Portfolio Status</h2>
+          <table>
+            <tr>
+              <th>Symbol</th><th style="text-align:right">Shares</th>
+              <th style="text-align:right">WACC</th><th style="text-align:right">LTP</th>
+              <th style="text-align:right">P&amp;L%</th><th style="text-align:right">P&amp;L (Rs)</th>
+            </tr>
+            
+        <tr>
+          <td style="font-weight:600">ALICL</td>
+          <td style="text-align:right">8,046</td>
+          <td style="text-align:right">549.87</td>
+          <td style="text-align:right">–</td>
+          <td style="text-align:right" class="pnl-pos">&#x25B2; +0.0%</td>
+          <td style="text-align:right" class="pnl-pos">Rs 0</td>
+        </tr>
+        
+        <tr>
+          <td style="font-weight:600">TTL</td>
+          <td style="text-align:right">368</td>
+          <td style="text-align:right">922.92</td>
+          <td style="text-align:right">–</td>
+          <td style="text-align:right" class="pnl-pos">&#x25B2; +0.0%</td>
+          <td style="text-align:right" class="pnl-pos">Rs 0</td>
+        </tr>
+        
+        <tr>
+          <td style="font-weight:600">NLIC</td>
+          <td style="text-align:right">273</td>
+          <td style="text-align:right">746.84</td>
+          <td style="text-align:right">–</td>
+          <td style="text-align:right" class="pnl-pos">&#x25B2; +0.0%</td>
+          <td style="text-align:right" class="pnl-pos">Rs 0</td>
+        </tr>
+        
+        <tr>
+          <td style="font-weight:600">BPCL</td>
+          <td style="text-align:right">200</td>
+          <td style="text-align:right">535.18</td>
+          <td style="text-align:right">–</td>
+          <td style="text-align:right" class="pnl-pos">&#x25B2; +0.0%</td>
+          <td style="text-align:right" class="pnl-pos">Rs 0</td>
+        </tr>
+        
+        <tr>
+          <td style="font-weight:600">BARUN</td>
+          <td style="text-align:right">400</td>
+          <td style="text-align:right">391.41</td>
+          <td style="text-align:right">–</td>
+          <td style="text-align:right" class="pnl-pos">&#x25B2; +0.0%</td>
+          <td style="text-align:right" class="pnl-pos">Rs 0</td>
+        </tr>
+        
+            <tr class="port-total">
+              <td colspan="4">Total Portfolio</td>
+              <td style="text-align:right" class="pnl-pos">+0.0%</td>
+              <td style="text-align:right" class="pnl-pos">Rs 0</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- AI Portfolio Advisor -->
+      
+            <div class="card">
+              <div class="section">
+                <h2>AI Portfolio Advisor</h2>
+                <div style="font-size:13px;line-height:1.6;color:#333">### TOP 3 ACTIONS (most urgent first):<br><br>1. **ALICL**<br>   - **Action:** SELL<br>   - **Quantity:** 2,046 shares<br>   - **Price Range:** NPR 570-580<br>   - **Why NOW:** ALICL has been under significant pressure and is likely to continue declining in the short term. Selling now can help mitigate further losses.<br><br>2. **TTL**<br>   - **Action:** SELL<br>   - **Quantity:** 164 shares<br>   - **Price Range:** NPR 950-970<br>   - **Why NOW:** TTL is showing signs of weakness and could face a correction soon due to low volume gaps up, which often precedes a reversal.<br><br>3. **NLIC**<br>   - **Action:** SELL<br>   - **Quantity:** 136 shares<br>   - **Price Range:** NPR 780-800<br>   - **Why NOW:** NLIC is in a volatile phase and could face regulatory-driven corrections, especially given the current market sentiment.<br><br>### ALICL SPECIFIC CALL<br><br>**Short-term (next 5 days):**<br>- **Price Range:** Likely to trade between NPR 540-560.<br>- **Action:** Consider selling 2,046 shares at NPR 570-580 to lock in some gains and reduce exposure.<br><br>**Recovery Target:**<br>- **When realistically does it hit NPR 549?** ALICL could recover if there is positive regulatory news or a dividend announcement. A realistic timeframe would be within the next 2-3 months.<br>- **What catalyst?** Positive Beema Samiti announcements, merger news, or strong quarterly earnings.<br><br>**Should you average down? At what price?**<br>- No, avoid averaging down at this stage. Wait for a more stable recovery signal before considering additional purchases.<br><br>### OPPORTUNITY FROM YOUR PORTFOLIO<br><br>**Stock:** MSMBS<br>- **Entry Price:** NPR 520-530<br>- **Why This One:** MSMBS has strong fundamentals and is currently undervalued relative to its peers. The stock could see a significant rally in the near term due to positive regulatory news.<br>- **Max Qty to Add:** Up to 1,000 shares<br><br>### BIGGEST RISK TO YOUR PORTFOLIO THIS WEEK<br><br>**Risk:** Political instability leading to volatility in the insurance sector (ALICL and NLIC). Any sudden government policy changes or coalition shifts could cause sharp declines in these stocks. Monitor political news closely and be prepared to act quickly if necessary.<br><br>---<br><br>This advice is tailored specifically for your portfolio, focusing on risk management and identifying opportunities based on current market conditions and historical patterns unique to the NEPSE.</div>
+              </div>
+            </div>
+            
+
+      <!-- Paper Trading -->
+      <div style="font-family:monospace; border:1px solid #ccc; border-radius:8px; padding:16px; max-width:600px; margin:12px auto;">
+<h3 style="margin-top:0;">Paper Trading Performance</h3>
+<table>
+<tr><td>Starting Capital</td><td>NPR 10,000,000</td></tr>
+<tr><td>Current Equity</td><td style="color:#27ae60; font-weight:bold;">NPR 10,000,000</td></tr>
+<tr><td>Total Return</td><td style="color:#27ae60;">+0.00%</td></tr>
+<tr><td>Win Rate</td><td>0.0%</td></tr>
+<tr><td>Total Trades</td><td>0</td></tr>
+<tr><td>Avg Hold Days</td><td>0.0</td></tr>
+<tr><td>Sharpe Ratio</td><td>0.00</td></tr>
+<tr><td>Max Drawdown</td><td>0.00%</td></tr>
+</table>
+<h4>Equity Curve (last 20 days)</h4>
+<pre>
+03-29 |# 10,000,000
+</pre>
+</div>
+
+      <!-- Signal Tracker -->
+      <div class='card'><div class='section'><h2>Signal Performance Tracker (30d)</h2><pre style="font-size:12px;line-height:1.5;color:#333">
+================ Signal Performance Tracker ================
+  Period          : last 30 days
+  Total signals   : 10
+  Evaluated       : 0
+  Hit rate        : 0.0%
+  Avg 5d return   : 0.0%
+  Best pick       : N/A
+  Worst pick      : N/A
+
+============================================================</pre></div></div>
+
+      
+
+      <!-- Footer -->
+      <div class="footer">
+        &#x26A1; Generated by <strong>NEPSE AutoScan</strong><br>
+        2026-03-29 15:29 NPT &middot;
+        XGBoost + LightGBM + GRU + TA &middot; Regime: BULL<br>
+        <span style="color:#bbb">Models retrained daily &middot; Signal tracking active</span>
+      </div>
+
+    </div>
+    </body>
+    </html>
+    
