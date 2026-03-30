@@ -1208,14 +1208,27 @@ header, main, footer, .tab-content {{ position: relative; z-index: 10; pointer-e
 
       <div style="width:1px;height:20px;background:rgba(66,71,83,0.15);margin:0 4px"></div>
 
-      <!-- Indicators -->
+      <!-- Overlays -->
+      <span class="text-[8px] text-outline uppercase hidden sm:inline">Overlay</span>
       <div class="flex flex-wrap gap-1" style="font-size:10px">
         <button onclick="toggleInd('sma')" id="ind-sma" class="ind-toggle px-2 py-1 rounded font-label font-semibold text-[#ffd740]" style="background:rgba(255,215,64,0.1)">SMA</button>
         <button onclick="toggleInd('ema')" id="ind-ema" class="ind-toggle px-2 py-1 rounded font-label font-semibold text-outline">EMA</button>
         <button onclick="toggleInd('bb')" id="ind-bb" class="ind-toggle px-2 py-1 rounded font-label font-semibold text-outline">BB</button>
+        <button onclick="toggleInd('vwap')" id="ind-vwap" class="ind-toggle px-2 py-1 rounded font-label font-semibold text-outline">VWAP</button>
+        <button onclick="toggleInd('supertrend')" id="ind-supertrend" class="ind-toggle px-2 py-1 rounded font-label font-semibold text-outline">ST</button>
+        <button onclick="toggleInd('ichimoku')" id="ind-ichimoku" class="ind-toggle px-2 py-1 rounded font-label font-semibold text-outline">ICHI</button>
+      </div>
+      <div style="width:1px;height:20px;background:rgba(66,71,83,0.15);margin:0 4px"></div>
+      <!-- Studies -->
+      <span class="text-[8px] text-outline uppercase hidden sm:inline">Study</span>
+      <div class="flex flex-wrap gap-1" style="font-size:10px">
         <button onclick="toggleInd('vol')" id="ind-vol" class="ind-toggle px-2 py-1 rounded font-label font-semibold text-[#4f8ff7]" style="background:rgba(79,143,247,0.1)">VOL</button>
         <button onclick="toggleInd('rsi')" id="ind-rsi" class="ind-toggle px-2 py-1 rounded font-label font-semibold text-outline">RSI</button>
         <button onclick="toggleInd('macd')" id="ind-macd" class="ind-toggle px-2 py-1 rounded font-label font-semibold text-outline">MACD</button>
+        <button onclick="toggleInd('stochrsi')" id="ind-stochrsi" class="ind-toggle px-2 py-1 rounded font-label font-semibold text-outline">StRSI</button>
+        <button onclick="toggleInd('obv')" id="ind-obv" class="ind-toggle px-2 py-1 rounded font-label font-semibold text-outline">OBV</button>
+        <button onclick="toggleInd('adx')" id="ind-adx" class="ind-toggle px-2 py-1 rounded font-label font-semibold text-outline">ADX</button>
+        <button onclick="toggleInd('atr')" id="ind-atr" class="ind-toggle px-2 py-1 rounded font-label font-semibold text-outline">ATR</button>
       </div>
     </div>
 
@@ -1225,6 +1238,10 @@ header, main, footer, .tab-content {{ position: relative; z-index: 10; pointer-e
     <div id="rsi-panel" style="height:0;overflow:hidden;transition:height 0.3s ease"></div>
     <!-- MACD panel (hidden by default) -->
     <div id="macd-panel" style="height:0;overflow:hidden;transition:height 0.3s ease"></div>
+    <div id="stochrsi-panel" style="height:0;overflow:hidden;transition:height 0.3s ease"></div>
+    <div id="obv-panel" style="height:0;overflow:hidden;transition:height 0.3s ease"></div>
+    <div id="adx-panel" style="height:0;overflow:hidden;transition:height 0.3s ease"></div>
+    <div id="atr-panel" style="height:0;overflow:hidden;transition:height 0.3s ease"></div>
   </div>
   <!-- Market Stats + Sector Performance side by side -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1658,6 +1675,131 @@ try {{
     }}).filter(d => d !== null);
   }}
 
+  // ── New indicator calculations ──────────────────────────────
+  function calcVWAP(data, vols) {{
+    let cumVol = 0, cumTP = 0;
+    return data.map((d, i) => {{
+      const tp = (d.high + d.low + d.close) / 3;
+      const v = vols[i] ? (vols[i].value || 0) : 0;
+      cumVol += v; cumTP += tp * v;
+      if (cumVol === 0) return null;
+      return {{ time: d.time, value: Math.round(cumTP / cumVol * 100) / 100 }};
+    }}).filter(d => d !== null);
+  }}
+  function calcOBV(data, vols) {{
+    let obv = 0;
+    return data.map((d, i) => {{
+      const v = vols[i] ? (vols[i].value || 0) : 0;
+      if (i > 0) obv += d.close > data[i-1].close ? v : (d.close < data[i-1].close ? -v : 0);
+      return {{ time: d.time, value: obv }};
+    }});
+  }}
+  function calcATR(data, period) {{
+    const result = [];
+    for (let i = 0; i < data.length; i++) {{
+      if (i === 0) {{ result.push(null); continue; }}
+      const tr = Math.max(data[i].high - data[i].low, Math.abs(data[i].high - data[i-1].close), Math.abs(data[i].low - data[i-1].close));
+      if (i < period) {{ result.push(null); continue; }}
+      if (i === period) {{
+        let sum = 0;
+        for (let j = 1; j <= period; j++) sum += Math.max(data[j].high - data[j].low, Math.abs(data[j].high - data[j-1].close), Math.abs(data[j].low - data[j-1].close));
+        result.push({{ time: data[i].time, value: Math.round(sum / period * 100) / 100 }});
+      }} else {{
+        const prev = result[i-1] ? result[i-1].value : tr;
+        result.push({{ time: data[i].time, value: Math.round((prev * (period-1) + tr) / period * 100) / 100 }});
+      }}
+    }}
+    return result.filter(d => d !== null);
+  }}
+  function calcSupertrend(data, period, mult) {{
+    const atr = calcATR(data, period);
+    const result = [];
+    let prevUp = 0, prevDn = 0, prevTrend = 1;
+    for (let i = 0; i < data.length; i++) {{
+      const atrVal = atr.find(a => a && a.time === data[i].time);
+      if (!atrVal) {{ result.push(null); continue; }}
+      const hl2 = (data[i].high + data[i].low) / 2;
+      let up = hl2 - mult * atrVal.value;
+      let dn = hl2 + mult * atrVal.value;
+      up = (prevUp > 0 && data[i-1] && data[i-1].close > prevUp) ? Math.max(up, prevUp) : up;
+      dn = (prevDn > 0 && data[i-1] && data[i-1].close < prevDn) ? Math.min(dn, prevDn) : dn;
+      let trend = prevTrend;
+      if (prevTrend === -1 && data[i].close > prevDn) trend = 1;
+      else if (prevTrend === 1 && data[i].close < prevUp) trend = -1;
+      result.push({{ time: data[i].time, value: Math.round((trend === 1 ? up : dn) * 100) / 100, color: trend === 1 ? '#00e475' : '#ff5252' }});
+      prevUp = up; prevDn = dn; prevTrend = trend;
+    }}
+    return result.filter(d => d !== null);
+  }}
+  function calcStochRSI(data, rsiPeriod, stochPeriod, kSmooth, dSmooth) {{
+    const rsi = calcRSI(data, rsiPeriod);
+    const kLine = [], dLine = [];
+    for (let i = 0; i < rsi.length; i++) {{
+      if (i < stochPeriod - 1) continue;
+      const slice = rsi.slice(i - stochPeriod + 1, i + 1).map(r => r.value);
+      const lo = Math.min(...slice), hi = Math.max(...slice);
+      kLine.push({{ time: rsi[i].time, value: hi === lo ? 50 : Math.round((rsi[i].value - lo) / (hi - lo) * 100 * 10) / 10 }});
+    }}
+    for (let i = 0; i < kLine.length; i++) {{
+      if (i < dSmooth - 1) {{ dLine.push(null); continue; }}
+      const avg = kLine.slice(i - dSmooth + 1, i + 1).reduce((s, v) => s + v.value, 0) / dSmooth;
+      dLine.push({{ time: kLine[i].time, value: Math.round(avg * 10) / 10 }});
+    }}
+    return {{ k: kLine, d: dLine.filter(d => d !== null) }};
+  }}
+  function calcADX(data, period) {{
+    const result = []; const pDI = []; const nDI = [];
+    let atr = 0, pDM = 0, nDM = 0;
+    for (let i = 1; i < data.length; i++) {{
+      const tr = Math.max(data[i].high - data[i].low, Math.abs(data[i].high - data[i-1].close), Math.abs(data[i].low - data[i-1].close));
+      const upMove = data[i].high - data[i-1].high;
+      const dnMove = data[i-1].low - data[i].low;
+      const pdm = (upMove > dnMove && upMove > 0) ? upMove : 0;
+      const ndm = (dnMove > upMove && dnMove > 0) ? dnMove : 0;
+      if (i <= period) {{
+        atr += tr; pDM += pdm; nDM += ndm;
+        if (i === period) {{ atr /= period; pDM /= period; nDM /= period; }}
+        pDI.push(null); nDI.push(null); result.push(null); continue;
+      }}
+      atr = (atr * (period-1) + tr) / period;
+      pDM = (pDM * (period-1) + pdm) / period;
+      nDM = (nDM * (period-1) + ndm) / period;
+      const pdi = atr > 0 ? pDM / atr * 100 : 0;
+      const ndi = atr > 0 ? nDM / atr * 100 : 0;
+      const dx = (pdi + ndi) > 0 ? Math.abs(pdi - ndi) / (pdi + ndi) * 100 : 0;
+      pDI.push({{ time: data[i].time, value: Math.round(pdi * 10) / 10 }});
+      nDI.push({{ time: data[i].time, value: Math.round(ndi * 10) / 10 }});
+      result.push({{ time: data[i].time, value: Math.round(dx * 10) / 10 }});
+    }}
+    // Smooth ADX
+    const adx = []; let adxVal = 0; let count = 0;
+    const dxVals = result.filter(d => d !== null);
+    for (let i = 0; i < dxVals.length; i++) {{
+      if (i < period) {{ adxVal += dxVals[i].value; if (i === period - 1) adxVal /= period; adx.push(null); continue; }}
+      adxVal = (adxVal * (period-1) + dxVals[i].value) / period;
+      adx.push({{ time: dxVals[i].time, value: Math.round(adxVal * 10) / 10 }});
+    }}
+    return {{ adx: adx.filter(d => d !== null), pDI: pDI.filter(d => d !== null), nDI: nDI.filter(d => d !== null) }};
+  }}
+  function calcIchimoku(data) {{
+    function hl(arr, p, i) {{
+      const slice = arr.slice(Math.max(0, i - p + 1), i + 1);
+      return {{ h: Math.max(...slice.map(d => d.high)), l: Math.min(...slice.map(d => d.low)) }};
+    }}
+    const tenkan = [], kijun = [], spanA = [], spanB = [], chikou = [];
+    for (let i = 0; i < data.length; i++) {{
+      const t9 = i >= 8 ? hl(data, 9, i) : null;
+      const k26 = i >= 25 ? hl(data, 26, i) : null;
+      const s52 = i >= 51 ? hl(data, 52, i) : null;
+      if (t9) tenkan.push({{ time: data[i].time, value: Math.round((t9.h + t9.l) / 2 * 100) / 100 }});
+      if (k26) kijun.push({{ time: data[i].time, value: Math.round((k26.h + k26.l) / 2 * 100) / 100 }});
+      if (t9 && k26) spanA.push({{ time: data[i].time, value: Math.round(((t9.h + t9.l) / 2 + (k26.h + k26.l) / 2) / 2 * 100) / 100 }});
+      if (s52) spanB.push({{ time: data[i].time, value: Math.round((s52.h + s52.l) / 2 * 100) / 100 }});
+      if (i >= 25) chikou.push({{ time: data[i - 25].time, value: data[i].close }});
+    }}
+    return {{ tenkan, kijun, spanA, spanB, chikou }};
+  }}
+
   // Pre-compute all indicators
   const sma10Data = calcSMA(tvData, 10);
   const sma20Data = calcSMA(tvData, 20);
@@ -1666,6 +1808,13 @@ try {{
   const bbData = calcBB(tvData, 20);
   const rsiData = calcRSI(tvData, 14);
   const macdResult = calcMACD(tvData);
+  const vwapData = calcVWAP(tvData, tvVols);
+  const obvData = calcOBV(tvData, tvVols);
+  const supertrendData = calcSupertrend(tvData, 10, 3);
+  const atrData = calcATR(tvData, 14);
+  const stochRsiResult = calcStochRSI(tvData, 14, 14, 3, 3);
+  const adxResult = calcADX(tvData, 14);
+  const ichimokuResult = calcIchimoku(tvData);
 
   // State
   let currentType = 'candle';
@@ -1674,10 +1823,19 @@ try {{
     sma: {{ active: true, series: [] }},
     ema: {{ active: false, series: [] }},
     bb: {{ active: false, series: [] }},
+    vwap: {{ active: false, series: [] }},
+    supertrend: {{ active: false, series: [] }},
+    ichimoku: {{ active: false, series: [] }},
     vol: {{ active: true, series: null }},
     rsi: {{ active: false, chart: null }},
     macd: {{ active: false, chart: null }},
+    stochrsi: {{ active: false, chart: null }},
+    obv: {{ active: false, chart: null }},
+    adx: {{ active: false, chart: null }},
+    atr: {{ active: false, chart: null }},
   }};
+  // Track active panels for max-2 limit
+  let activePanels = [];
 
   // Create main chart
   const chartOpts = {{
@@ -1757,7 +1915,7 @@ try {{
 
   window.switchChartSymbol = async function(sym) {{
     // Remove current overlays
-    ['sma','ema','bb','vol'].forEach(id => {{
+    ['sma','ema','bb','vwap','supertrend','ichimoku','vol'].forEach(id => {{
       const ind = indicators[id];
       if (ind.active) {{
         if (ind.series && Array.isArray(ind.series)) {{ ind.series.forEach(s => chart.removeSeries(s)); ind.series = []; }}
@@ -1790,10 +1948,6 @@ try {{
       activeVols = stockCache[sym].volumes;
     }}
 
-    // Recompute indicators for new data
-    const newSma10 = calcSMA(activeData, 10);
-    const newSma20 = calcSMA(activeData, 20);
-
     // Recreate main series
     if (currentType === 'candle') {{
       mainSeries = chart.addCandlestickSeries({{ upColor:'#00e475', downColor:'#ff5252', borderUpColor:'#00e475', borderDownColor:'#ff5252', wickUpColor:'#00e475', wickDownColor:'#ff5252' }});
@@ -1806,18 +1960,68 @@ try {{
       mainSeries.setData(activeData.map(d => ({{ time:d.time, value:d.close }})));
     }}
 
+    // Recompute all indicators for new data
+    const newSma10r = calcSMA(activeData, 10), newSma20r = calcSMA(activeData, 20);
+    const newEma12 = calcEMA(activeData, 12), newEma26 = calcEMA(activeData, 26);
+    const newBb = calcBB(activeData, 20);
+    const newVwap = calcVWAP(activeData, activeVols);
+    const newSt = calcSupertrend(activeData, 10, 3);
+    const newIchi = calcIchimoku(activeData);
+
     // Re-add active overlays
     if (indicators.sma.active) {{
       indicators.sma.series.push(chart.addLineSeries({{ color:'#ffd740',lineWidth:1,lineStyle:2,lastValueVisible:false,priceLineVisible:false }}));
-      indicators.sma.series[0].setData(newSma10);
+      indicators.sma.series[0].setData(newSma10r);
       indicators.sma.series.push(chart.addLineSeries({{ color:'#ff9800',lineWidth:1,lineStyle:2,lastValueVisible:false,priceLineVisible:false }}));
-      indicators.sma.series[1].setData(newSma20);
+      indicators.sma.series[1].setData(newSma20r);
+    }}
+    if (indicators.ema.active) {{
+      indicators.ema.series.push(chart.addLineSeries({{ color:'#00bcd4',lineWidth:1,lastValueVisible:false,priceLineVisible:false }}));
+      indicators.ema.series[0].setData(newEma12);
+      indicators.ema.series.push(chart.addLineSeries({{ color:'#e040fb',lineWidth:1,lastValueVisible:false,priceLineVisible:false }}));
+      indicators.ema.series[1].setData(newEma26);
+    }}
+    if (indicators.bb.active) {{
+      indicators.bb.series.push(chart.addLineSeries({{ color:'rgba(202,190,255,0.5)',lineWidth:1,lastValueVisible:false,priceLineVisible:false }}));
+      indicators.bb.series[0].setData(newBb.map(d => ({{ time:d.time, value:d.upper }})));
+      indicators.bb.series.push(chart.addLineSeries({{ color:'rgba(202,190,255,0.5)',lineWidth:1,lastValueVisible:false,priceLineVisible:false }}));
+      indicators.bb.series[1].setData(newBb.map(d => ({{ time:d.time, value:d.lower }})));
+    }}
+    if (indicators.vwap.active) {{
+      indicators.vwap.series.push(chart.addLineSeries({{ color:'#9c27b0',lineWidth:2,lastValueVisible:false,priceLineVisible:false }}));
+      indicators.vwap.series[0].setData(newVwap);
+    }}
+    if (indicators.supertrend.active) {{
+      indicators.supertrend.series.push(chart.addLineSeries({{ lineWidth:2,lastValueVisible:false,priceLineVisible:false }}));
+      indicators.supertrend.series[0].setData(newSt);
+    }}
+    if (indicators.ichimoku.active) {{
+      const s = indicators.ichimoku.series;
+      s.push(chart.addLineSeries({{ color:'#2196f3',lineWidth:1,lastValueVisible:false,priceLineVisible:false }}));
+      s[0].setData(newIchi.tenkan);
+      s.push(chart.addLineSeries({{ color:'#f44336',lineWidth:1,lastValueVisible:false,priceLineVisible:false }}));
+      s[1].setData(newIchi.kijun);
+      s.push(chart.addLineSeries({{ color:'rgba(0,228,117,0.4)',lineWidth:1,lastValueVisible:false,priceLineVisible:false }}));
+      s[2].setData(newIchi.spanA);
+      s.push(chart.addLineSeries({{ color:'rgba(255,82,82,0.4)',lineWidth:1,lastValueVisible:false,priceLineVisible:false }}));
+      s[3].setData(newIchi.spanB);
+      s.push(chart.addLineSeries({{ color:'rgba(174,213,129,0.6)',lineWidth:1,lineStyle:2,lastValueVisible:false,priceLineVisible:false }}));
+      s[4].setData(newIchi.chikou);
     }}
     if (indicators.vol.active) {{
       indicators.vol.series = chart.addHistogramSeries({{ priceFormat:{{ type:'volume' }}, priceScaleId:'vol' }});
       chart.priceScale('vol').applyOptions({{ scaleMargins:{{ top:0.82, bottom:0 }} }});
       indicators.vol.series.setData(activeVols);
     }}
+    // Destroy and recreate panel indicators with new data
+    ['rsi','macd','stochrsi','obv','adx','atr'].forEach(pid => {{
+      const pInd = indicators[pid];
+      if (pInd.active && pInd.chart) {{
+        pInd.chart.remove(); pInd.chart = null;
+        pInd.active = false;
+        toggleInd(pid); // re-toggle to recreate with new data
+      }}
+    }});
 
     // Update price display
     const last = activeData[activeData.length - 1];
@@ -1852,10 +2056,27 @@ try {{
     ind.active = !ind.active;
     // Update button style
     if (ind.active) {{
-      const colors = {{ sma:'#ffd740', ema:'#00bcd4', bb:'#cabeff', vol:'#4f8ff7', rsi:'#ff9800', macd:'#00e475' }};
+      const colors = {{ sma:'#ffd740', ema:'#00bcd4', bb:'#cabeff', vwap:'#9c27b0', supertrend:'#00e475', ichimoku:'#ff9800', vol:'#4f8ff7', rsi:'#ff9800', macd:'#00e475', stochrsi:'#e040fb', obv:'#4fc3f7', adx:'#ff7043', atr:'#aed581' }};
       btn.style.background='rgba(79,143,247,0.1)'; btn.style.color=colors[id]||'#4f8ff7';
     }} else {{
       btn.style.background=''; btn.style.color='#8c909e';
+    }}
+    // Panel management: max 2 sub-panels open at once
+    const panelIds = ['rsi','macd','stochrsi','obv','adx','atr'];
+    if (panelIds.includes(id) && ind.active) {{
+      activePanels = activePanels.filter(p => p !== id);
+      activePanels.push(id);
+      if (activePanels.length > 2) {{
+        const oldest = activePanels.shift();
+        toggleInd(oldest); // auto-close oldest
+        return;
+      }}
+    }} else if (panelIds.includes(id) && !ind.active) {{
+      activePanels = activePanels.filter(p => p !== id);
+    }}
+    // Ichimoku auto-hides SMA/EMA/BB (it's a complete system)
+    if (id === 'ichimoku' && ind.active) {{
+      ['sma','ema','bb'].forEach(oid => {{ if (indicators[oid].active) toggleInd(oid); }});
     }}
 
     if (id === 'sma') {{
@@ -1932,6 +2153,111 @@ try {{
       }} else {{
         panel.style.height = '0';
       }}
+    }}
+    // ── VWAP (overlay) ──
+    if (id === 'vwap') {{
+      if (ind.active && ind.series.length === 0) {{
+        ind.series.push(chart.addLineSeries({{ color:'#9c27b0',lineWidth:2,lastValueVisible:false,priceLineVisible:false }}));
+        ind.series[0].setData(vwapData);
+      }} else if (!ind.active) {{ ind.series.forEach(s => chart.removeSeries(s)); ind.series = []; }}
+    }}
+    // ── Supertrend (overlay, colored) ──
+    if (id === 'supertrend') {{
+      if (ind.active && ind.series.length === 0) {{
+        ind.series.push(chart.addLineSeries({{ lineWidth:2, lastValueVisible:false, priceLineVisible:false }}));
+        ind.series[0].setData(supertrendData);
+      }} else if (!ind.active) {{ ind.series.forEach(s => chart.removeSeries(s)); ind.series = []; }}
+    }}
+    // ── Ichimoku Cloud (overlay, multiple series) ──
+    if (id === 'ichimoku') {{
+      if (ind.active && ind.series.length === 0) {{
+        // Tenkan (conversion) - blue
+        ind.series.push(chart.addLineSeries({{ color:'#2196f3',lineWidth:1,lastValueVisible:false,priceLineVisible:false }}));
+        ind.series[0].setData(ichimokuResult.tenkan);
+        // Kijun (base) - red
+        ind.series.push(chart.addLineSeries({{ color:'#f44336',lineWidth:1,lastValueVisible:false,priceLineVisible:false }}));
+        ind.series[1].setData(ichimokuResult.kijun);
+        // Span A - green area top
+        ind.series.push(chart.addLineSeries({{ color:'rgba(0,228,117,0.4)',lineWidth:1,lastValueVisible:false,priceLineVisible:false }}));
+        ind.series[2].setData(ichimokuResult.spanA);
+        // Span B - red area bottom
+        ind.series.push(chart.addLineSeries({{ color:'rgba(255,82,82,0.4)',lineWidth:1,lastValueVisible:false,priceLineVisible:false }}));
+        ind.series[3].setData(ichimokuResult.spanB);
+        // Chikou (lagging) - lime
+        ind.series.push(chart.addLineSeries({{ color:'rgba(174,213,129,0.6)',lineWidth:1,lineStyle:2,lastValueVisible:false,priceLineVisible:false }}));
+        ind.series[4].setData(ichimokuResult.chikou);
+      }} else if (!ind.active) {{ ind.series.forEach(s => chart.removeSeries(s)); ind.series = []; }}
+    }}
+    // ── Stochastic RSI (panel) ──
+    if (id === 'stochrsi') {{
+      const panel = document.getElementById('stochrsi-panel');
+      if (ind.active) {{
+        panel.style.height = '120px';
+        if (!ind.chart) {{
+          ind.chart = LightweightCharts.createChart(panel, {{
+            width:tvContainer.clientWidth, height:120,
+            layout:{{ background:{{ type:'solid',color:'transparent' }}, textColor:'#8c909e', fontFamily:'Space Grotesk' }},
+            grid:{{ vertLines:{{ color:'rgba(66,71,83,0.03)' }}, horzLines:{{ color:'rgba(66,71,83,0.03)' }} }},
+            rightPriceScale:{{ borderColor:'rgba(66,71,83,0.08)' }}, timeScale:{{ visible:false }},
+          }});
+          ind.chart.addLineSeries({{ color:'#e040fb', lineWidth:1.5, priceLineVisible:false }}).setData(stochRsiResult.k);
+          ind.chart.addLineSeries({{ color:'#ff9800', lineWidth:1, lineStyle:2, priceLineVisible:false }}).setData(stochRsiResult.d);
+          ind.chart.addLineSeries({{ color:'rgba(255,82,82,0.3)', lineWidth:1, lineStyle:2, lastValueVisible:false, priceLineVisible:false }}).setData(stochRsiResult.k.map(d => ({{ time:d.time, value:80 }})));
+          ind.chart.addLineSeries({{ color:'rgba(0,228,117,0.3)', lineWidth:1, lineStyle:2, lastValueVisible:false, priceLineVisible:false }}).setData(stochRsiResult.k.map(d => ({{ time:d.time, value:20 }})));
+        }}
+      }} else {{ panel.style.height = '0'; }}
+    }}
+    // ── OBV (panel) ──
+    if (id === 'obv') {{
+      const panel = document.getElementById('obv-panel');
+      if (ind.active) {{
+        panel.style.height = '120px';
+        if (!ind.chart) {{
+          ind.chart = LightweightCharts.createChart(panel, {{
+            width:tvContainer.clientWidth, height:120,
+            layout:{{ background:{{ type:'solid',color:'transparent' }}, textColor:'#8c909e', fontFamily:'Space Grotesk' }},
+            grid:{{ vertLines:{{ color:'rgba(66,71,83,0.03)' }}, horzLines:{{ color:'rgba(66,71,83,0.03)' }} }},
+            rightPriceScale:{{ borderColor:'rgba(66,71,83,0.08)' }}, timeScale:{{ visible:false }},
+          }});
+          ind.chart.addLineSeries({{ color:'#4fc3f7', lineWidth:1.5, priceLineVisible:false }}).setData(obvData);
+        }}
+      }} else {{ panel.style.height = '0'; }}
+    }}
+    // ── ADX (panel with +DI/-DI) ──
+    if (id === 'adx') {{
+      const panel = document.getElementById('adx-panel');
+      if (ind.active) {{
+        panel.style.height = '120px';
+        if (!ind.chart) {{
+          ind.chart = LightweightCharts.createChart(panel, {{
+            width:tvContainer.clientWidth, height:120,
+            layout:{{ background:{{ type:'solid',color:'transparent' }}, textColor:'#8c909e', fontFamily:'Space Grotesk' }},
+            grid:{{ vertLines:{{ color:'rgba(66,71,83,0.03)' }}, horzLines:{{ color:'rgba(66,71,83,0.03)' }} }},
+            rightPriceScale:{{ borderColor:'rgba(66,71,83,0.08)' }}, timeScale:{{ visible:false }},
+          }});
+          ind.chart.addLineSeries({{ color:'#ff7043', lineWidth:2, priceLineVisible:false }}).setData(adxResult.adx);
+          ind.chart.addLineSeries({{ color:'#00e475', lineWidth:1, lineStyle:2, lastValueVisible:false, priceLineVisible:false }}).setData(adxResult.pDI);
+          ind.chart.addLineSeries({{ color:'#ff5252', lineWidth:1, lineStyle:2, lastValueVisible:false, priceLineVisible:false }}).setData(adxResult.nDI);
+          // 25 threshold line
+          ind.chart.addLineSeries({{ color:'rgba(140,144,158,0.3)', lineWidth:1, lineStyle:2, lastValueVisible:false, priceLineVisible:false }}).setData(adxResult.adx.map(d => ({{ time:d.time, value:25 }})));
+        }}
+      }} else {{ panel.style.height = '0'; }}
+    }}
+    // ── ATR (panel) ──
+    if (id === 'atr') {{
+      const panel = document.getElementById('atr-panel');
+      if (ind.active) {{
+        panel.style.height = '120px';
+        if (!ind.chart) {{
+          ind.chart = LightweightCharts.createChart(panel, {{
+            width:tvContainer.clientWidth, height:120,
+            layout:{{ background:{{ type:'solid',color:'transparent' }}, textColor:'#8c909e', fontFamily:'Space Grotesk' }},
+            grid:{{ vertLines:{{ color:'rgba(66,71,83,0.03)' }}, horzLines:{{ color:'rgba(66,71,83,0.03)' }} }},
+            rightPriceScale:{{ borderColor:'rgba(66,71,83,0.08)' }}, timeScale:{{ visible:false }},
+          }});
+          ind.chart.addLineSeries({{ color:'#aed581', lineWidth:1.5, priceLineVisible:false }}).setData(atrData);
+        }}
+      }} else {{ panel.style.height = '0'; }}
     }}
   }};
 
