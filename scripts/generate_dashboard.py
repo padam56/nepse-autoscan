@@ -459,6 +459,179 @@ def generate():
     port_pct = (port_total_cur / port_total_inv - 1) * 100 if port_total_inv > 0 else 0
     port_cls = "text-tertiary" if port_pnl >= 0 else "text-error"
 
+    # ── Analytics ─────────────────────────────────────────────────────
+    try:
+        from src.analytics import run_analytics
+        analytics = run_analytics(60)
+    except Exception as e:
+        print(f"[DASHBOARD] Analytics failed: {e}")
+        analytics = {}
+
+    # Build analytics HTML sections
+    analytics_html = ""
+    if analytics:
+        sr = analytics.get("sector_rotation", [])
+        br = analytics.get("breadth", {})
+        mom = analytics.get("momentum", {})
+        vol = analytics.get("volatility", {})
+        corr = analytics.get("correlation", {})
+
+        # Sector rotation heatmap
+        sr_rows = ""
+        heat_colors = {"HOT": "#00e475", "WARM": "#4fc3f7", "NEUTRAL": "#8c909e", "COOL": "#ffd740", "COLD": "#ff5252"}
+        for s in sr:
+            hc = heat_colors.get(s["heat"], "#8c909e")
+            c5 = "#00e475" if s["avg_5d"] >= 0 else "#ff5252"
+            c20 = "#00e475" if s["avg_20d"] >= 0 else "#ff5252"
+            sr_rows += f'''<tr class="hover:bg-white/5 transition-colors text-xs">
+                <td class="px-4 py-2.5 font-bold" style="color:{hc}">{s["heat"]}</td>
+                <td class="px-4 py-2.5 font-bold">{s["sector"]}</td>
+                <td class="px-4 py-2.5 text-right" style="color:{c5};font-weight:600">{s["avg_5d"]:+.2f}%</td>
+                <td class="px-4 py-2.5 text-right" style="color:{c20}">{s["avg_20d"]:+.2f}%</td>
+                <td class="px-4 py-2.5 text-right text-outline">{s["n_positive"]}/{s["n_stocks"]}</td>
+            </tr>'''
+
+        # Breadth summary
+        rsi_d = br.get("rsi_distribution", {})
+        breadth_pct = br.get("pct_above_sma20", 0)
+        breadth_cls = "text-tertiary" if breadth_pct > 50 else "text-error"
+
+        # Momentum tables
+        mom_rows = ""
+        for m in mom.get("top_momentum", [])[:10]:
+            c5 = "text-tertiary" if m["ret_5d"] >= 0 else "text-error"
+            mom_rows += f'''<tr class="hover:bg-white/5 transition-colors text-xs">
+                <td class="px-3 py-2 font-bold">{m["symbol"]}</td>
+                <td class="px-3 py-2 text-outline">{m["sector"][:8]}</td>
+                <td class="px-3 py-2 text-right">{m["price"]:,.0f}</td>
+                <td class="px-3 py-2 text-right {c5} font-bold">{m["ret_5d"]:+.1f}%</td>
+                <td class="px-3 py-2 text-right text-primary font-bold">{m["sharpe_5d"]:+.1f}</td>
+                <td class="px-3 py-2 text-right">{m["rsi"]:.0f}</td>
+            </tr>'''
+
+        # Volume breakout rows
+        vb_rows = ""
+        for m in mom.get("volume_breakouts", [])[:6]:
+            vb_rows += f'''<tr class="hover:bg-white/5 transition-colors text-xs">
+                <td class="px-3 py-2 font-bold">{m["symbol"]}</td>
+                <td class="px-3 py-2 text-right">{m["price"]:,.0f}</td>
+                <td class="px-3 py-2 text-right text-tertiary font-bold">{m["ret_5d"]:+.1f}%</td>
+                <td class="px-3 py-2 text-right text-primary font-bold">{m["vol_ratio"]:.1f}x</td>
+            </tr>'''
+        if not vb_rows:
+            vb_rows = '<tr><td colspan="4" class="px-3 py-4 text-center text-outline text-xs">No volume breakouts detected</td></tr>'
+
+        # Oversold bounce rows
+        ob_rows = ""
+        for m in mom.get("oversold_bounces", [])[:6]:
+            ob_rows += f'''<tr class="hover:bg-white/5 transition-colors text-xs">
+                <td class="px-3 py-2 font-bold">{m["symbol"]}</td>
+                <td class="px-3 py-2 text-right">{m["price"]:,.0f}</td>
+                <td class="px-3 py-2 text-right text-tertiary font-bold">{m["ret_5d"]:+.1f}%</td>
+                <td class="px-3 py-2 text-right text-error font-bold">{m["rsi"]:.0f}</td>
+            </tr>'''
+        if not ob_rows:
+            ob_rows = '<tr><td colspan="4" class="px-3 py-4 text-center text-outline text-xs">No oversold bounces detected</td></tr>'
+
+        # Volatility regime
+        vol_regime = vol.get("regime", "NORMAL")
+        vol_cls = {"HIGH_VOL": "text-error", "LOW_VOL": "text-tertiary", "NORMAL": "text-primary"}.get(vol_regime, "text-outline")
+
+        # Correlation heatmap data (for Chart.js)
+        corr_sectors = json.dumps(corr.get("sectors", []))
+        corr_matrix = json.dumps(corr.get("matrix", []))
+
+        # RSI distribution data
+        rsi_labels = json.dumps(["<30 Oversold", "30-50", "50-70", "70+ Overbought"])
+        rsi_values = json.dumps([rsi_d.get("oversold_0_30", 0), rsi_d.get("neutral_30_50", 0), rsi_d.get("neutral_50_70", 0), rsi_d.get("overbought_70_100", 0)])
+
+        # Volatility chart data
+        vol_dates = json.dumps([d["date"][-5:] for d in vol.get("daily_stats", [])[-30:]])
+        vol_stds = json.dumps([d["std_ret"] for d in vol.get("daily_stats", [])[-30:]])
+        vol_pcts = json.dumps([d["pct_positive"] for d in vol.get("daily_stats", [])[-30:]])
+
+        analytics_html = f'''
+<!-- Market Analytics -->
+<section class="space-y-8">
+  <div>
+    <h2 class="text-2xl font-headline font-black">Market Analytics</h2>
+    <p class="text-on-surface-variant text-sm font-label">Sector rotation, breadth, momentum, volatility &middot; 60-day window</p>
+  </div>
+
+  <!-- Row 1: Breadth gauges + Sector rotation -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Breadth gauges -->
+    <div class="glass-card rounded-2xl p-6">
+      <h3 class="text-sm font-label uppercase tracking-widest font-bold mb-4">Market Breadth</h3>
+      <div class="space-y-4">
+        <div>
+          <div class="flex justify-between text-xs font-label mb-1"><span class="text-outline">Above SMA20</span><span class="{breadth_cls} font-bold">{breadth_pct}%</span></div>
+          <div class="w-full h-2 rounded-full bg-surface-container-highest/30"><div class="h-2 rounded-full {'bg-tertiary' if breadth_pct > 50 else 'bg-error'}" style="width:{min(breadth_pct, 100)}%"></div></div>
+        </div>
+        <div class="grid grid-cols-2 gap-3 text-center">
+          <div class="bg-surface-container-lowest/50 rounded-lg p-3"><span class="block text-[10px] text-outline uppercase">20D Highs</span><span class="text-lg font-headline font-bold text-tertiary">{br.get("new_20d_highs", 0)}</span></div>
+          <div class="bg-surface-container-lowest/50 rounded-lg p-3"><span class="block text-[10px] text-outline uppercase">20D Lows</span><span class="text-lg font-headline font-bold text-error">{br.get("new_20d_lows", 0)}</span></div>
+          <div class="bg-surface-container-lowest/50 rounded-lg p-3"><span class="block text-[10px] text-outline uppercase">RSI Mean</span><span class="text-lg font-headline font-bold">{br.get("rsi_mean", 50)}</span></div>
+          <div class="bg-surface-container-lowest/50 rounded-lg p-3"><span class="block text-[10px] text-outline uppercase">Vol Regime</span><span class="text-lg font-headline font-bold {vol_cls}">{vol_regime.replace("_", " ")}</span></div>
+        </div>
+        <div style="height:140px"><canvas id="rsiDistChart"></canvas></div>
+      </div>
+    </div>
+    <!-- Sector rotation -->
+    <div class="lg:col-span-2 glass-card rounded-2xl p-6 overflow-hidden">
+      <h3 class="text-sm font-label uppercase tracking-widest font-bold mb-4">Sector Rotation <span class="text-outline font-normal ml-2">5D vs 20D performance</span></h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm font-label">
+          <thead class="text-outline border-b border-outline-variant/20"><tr><th class="px-4 py-2">Heat</th><th class="px-4 py-2">Sector</th><th class="px-4 py-2 text-right">5D</th><th class="px-4 py-2 text-right">20D</th><th class="px-4 py-2 text-right">Pos/Tot</th></tr></thead>
+          <tbody class="divide-y divide-outline-variant/5">{sr_rows}</tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Momentum + Volume breakouts + Oversold bounces -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="glass-card rounded-2xl p-6 overflow-hidden">
+      <h3 class="text-sm font-label uppercase tracking-widest font-bold mb-4">Top Momentum <span class="text-outline font-normal ml-1">(Risk-Adjusted)</span></h3>
+      <div class="overflow-x-auto" style="max-height:320px;overflow-y:auto">
+        <table class="w-full text-left font-label">
+          <thead class="text-outline border-b border-outline-variant/20 sticky top-0"><tr><th class="px-3 py-2">Sym</th><th class="px-3 py-2">Sector</th><th class="px-3 py-2 text-right">Price</th><th class="px-3 py-2 text-right">5D</th><th class="px-3 py-2 text-right">Sharpe</th><th class="px-3 py-2 text-right">RSI</th></tr></thead>
+          <tbody class="divide-y divide-outline-variant/5">{mom_rows}</tbody>
+        </table>
+      </div>
+    </div>
+    <div class="glass-card rounded-2xl p-6 overflow-hidden">
+      <h3 class="text-sm font-label uppercase tracking-widest font-bold mb-4">Volume Breakouts <span class="text-outline font-normal ml-1">(2x+ avg vol)</span></h3>
+      <table class="w-full text-left font-label">
+        <thead class="text-outline border-b border-outline-variant/20"><tr><th class="px-3 py-2">Symbol</th><th class="px-3 py-2 text-right">Price</th><th class="px-3 py-2 text-right">5D Ret</th><th class="px-3 py-2 text-right">Vol Ratio</th></tr></thead>
+        <tbody class="divide-y divide-outline-variant/5">{vb_rows}</tbody>
+      </table>
+    </div>
+    <div class="glass-card rounded-2xl p-6 overflow-hidden">
+      <h3 class="text-sm font-label uppercase tracking-widest font-bold mb-4">Oversold Bounces <span class="text-outline font-normal ml-1">(RSI &lt;35 + rising)</span></h3>
+      <table class="w-full text-left font-label">
+        <thead class="text-outline border-b border-outline-variant/20"><tr><th class="px-3 py-2">Symbol</th><th class="px-3 py-2 text-right">Price</th><th class="px-3 py-2 text-right">5D Ret</th><th class="px-3 py-2 text-right">RSI</th></tr></thead>
+        <tbody class="divide-y divide-outline-variant/5">{ob_rows}</tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Row 3: Volatility trend + Sector correlation -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="glass-card rounded-2xl p-6">
+      <h3 class="text-sm font-label uppercase tracking-widest font-bold mb-4">Volatility &amp; Sentiment <span class="text-outline font-normal ml-1">(30 days)</span></h3>
+      <div style="height:200px"><canvas id="volChart"></canvas></div>
+    </div>
+    <div class="glass-card rounded-2xl p-6">
+      <h3 class="text-sm font-label uppercase tracking-widest font-bold mb-4">Sector Correlation Matrix</h3>
+      <div style="height:200px"><canvas id="corrChart"></canvas></div>
+    </div>
+  </div>
+</section>
+'''
+    else:
+        analytics_html = ""
+
     # Load newsletter HTML — prefer latest scanner report, fall back to sample
     reports_dir = ROOT / "reports"
     scanner_reports = sorted(reports_dir.glob("scanner_*.html")) if reports_dir.exists() else []
@@ -1289,6 +1462,8 @@ header, main, footer, .tab-content {{ position: relative; z-index: 10; pointer-e
     <div style="height:200px"><canvas id="breadthChart"></canvas></div>
   </div>
 </section>
+
+{analytics_html}
 
 <!-- Top Movers -->
 <section class="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -2286,6 +2461,78 @@ try {{ new Chart(document.getElementById('breadthChart'),{{
     plugins:{{ legend:{{position:'top', labels:{{boxWidth:12, padding:8, color:'#8c909e'}} }} }}
   }}
 }}); }} catch(e) {{ console.warn("Breadth chart error:", e); }}
+
+// Analytics charts
+{f"""
+// RSI distribution (doughnut)
+try {{ new Chart(document.getElementById('rsiDistChart'),{{
+  type:'doughnut',
+  data:{{ labels:{rsi_labels}, datasets:[{{ data:{rsi_values},
+    backgroundColor:['#ff5252','#ffd740','#4fc3f7','#ff5252'], borderWidth:0 }}] }},
+  options:{{ responsive:true, maintainAspectRatio:false, cutout:'60%',
+    plugins:{{ legend:{{position:'right', labels:{{boxWidth:8, padding:6, color:'#8c909e', font:{{size:10}} }} }} }} }}
+}}); }} catch(e) {{ console.warn("RSI dist chart error:", e); }}
+
+// Volatility chart (dual axis: vol bars + sentiment line)
+try {{
+  const volCtx = document.getElementById('volChart');
+  new Chart(volCtx, {{
+    type:'bar',
+    data:{{ labels:{vol_dates}, datasets:[
+      {{ label:'Daily Vol (std%)', data:{vol_stds}, backgroundColor:'rgba(79,143,247,0.4)', borderRadius:2, yAxisID:'y' }},
+      {{ label:'% Positive', data:{vol_pcts}, type:'line', borderColor:'#00e475', borderWidth:1.5, pointRadius:0, tension:0.4, yAxisID:'y1' }}
+    ] }},
+    options:{{ responsive:true, maintainAspectRatio:false,
+      scales:{{
+        x:{{ grid:{{display:false}}, ticks:{{maxTicksLimit:6, color:'#8c909e', font:{{size:9}} }} }},
+        y:{{ position:'left', grid:{{color:'rgba(66,71,83,0.08)'}}, ticks:{{color:'#8c909e', font:{{size:9}}, callback:v=>v.toFixed(1)+'%'}} }},
+        y1:{{ position:'right', grid:{{display:false}}, min:0, max:100, ticks:{{color:'#00e475', font:{{size:9}}, callback:v=>v+'%'}} }}
+      }},
+      plugins:{{ legend:{{labels:{{boxWidth:10, padding:8, color:'#8c909e', font:{{size:10}} }} }} }}
+    }}
+  }});
+}} catch(e) {{ console.warn("Vol chart error:", e); }}
+
+// Sector correlation heatmap
+try {{
+  const corrSectors = {corr_sectors};
+  const corrMatrix = {corr_matrix};
+  const corrCanvas = document.getElementById('corrChart');
+  const corrCtx = corrCanvas.getContext('2d');
+  const n = corrSectors.length;
+  if (n > 0) {{
+    const w = corrCanvas.width / (n + 1);
+    const h = corrCanvas.height / (n + 1);
+    // Draw labels
+    corrCtx.fillStyle = '#8c909e';
+    corrCtx.font = '9px Space Grotesk';
+    for (let i = 0; i < n; i++) {{
+      corrCtx.save();
+      corrCtx.translate((i + 1.5) * w, n * h + 14);
+      corrCtx.rotate(-0.5);
+      corrCtx.fillText(corrSectors[i].slice(0, 6), 0, 0);
+      corrCtx.restore();
+      corrCtx.fillText(corrSectors[i].slice(0, 6), 2, (i + 1.5) * h + 3);
+    }}
+    // Draw cells
+    for (let i = 0; i < n; i++) {{
+      for (let j = 0; j < n; j++) {{
+        const v = corrMatrix[i][j];
+        const r = v > 0 ? 0 : 255;
+        const g = v > 0 ? Math.round(228 * Math.abs(v)) : 0;
+        const b = v > 0 ? Math.round(117 * Math.abs(v)) : Math.round(82 * Math.abs(v));
+        corrCtx.fillStyle = 'rgba(' + r + ',' + g + ',' + b + ',' + (0.2 + Math.abs(v) * 0.6) + ')';
+        corrCtx.fillRect((j + 1) * w, i * h, w - 1, h - 1);
+        if (Math.abs(v) > 0.3) {{
+          corrCtx.fillStyle = '#e2e2eb';
+          corrCtx.font = '9px Space Grotesk';
+          corrCtx.fillText(v.toFixed(1), (j + 1) * w + 4, i * h + h / 2 + 3);
+        }}
+      }}
+    }}
+  }}
+}} catch(e) {{ console.warn("Corr chart error:", e); }}
+""" if analytics else ""}
 
 const eqGrad = document.getElementById('equityChart').getContext('2d').createLinearGradient(0,0,0,250);
 eqGrad.addColorStop(0,'rgba(79,143,247,0.3)');
