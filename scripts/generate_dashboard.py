@@ -543,7 +543,7 @@ def generate():
 
         spark_attr = f' data-spark="{spark_data}"' if spark_data else ""
 
-        all_stock_rows += f'''<tr class="stock-row hover:bg-[#1a1d28] transition-colors duration-150 text-[12px]" data-sym="{sym.lower()}" data-sec="{sec.lower()}" style="border-bottom:1px solid rgba(66,71,83,0.06)" onclick="toggleDetail(this, '{sym}')">
+        all_stock_rows += f'''<tr class="stock-row hover:bg-white/5 transition-colors duration-150 text-[12px]" data-sym="{sym.lower()}" data-sec="{sec.lower()}" style="border-bottom:1px solid rgba(66,71,83,0.06)" onclick="toggleDetail(this, '{sym}')">
             <td class="px-4 py-2.5 font-bold text-[13px] text-on-surface">{sym}</td>
             <td class="px-3 py-2.5 text-outline text-[11px] hidden sm:table-cell">{sec}</td>
             <td class="px-3 py-2.5 text-right font-medium">{lp:,.1f}</td>
@@ -924,11 +924,11 @@ tailwind.config = {{
 <style>
 /* Glass morphism cards with subtle glow */
 .glass-card {{
-  background: rgba(18,21,31,0.65);
+  background: rgba(18,21,31,0.45);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(140,144,158,0.08);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.03);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.03);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }}
 .glass-card:hover {{
@@ -945,6 +945,13 @@ tailwind.config = {{
 html {{ background-color: #080a10; }}
 body {{ scroll-behavior: smooth; background: transparent; }}
 
+/* Transparent surface overrides so 3D background shows through */
+.bg-surface-container {{ background: rgba(30,31,38,0.5) !important; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }}
+.bg-surface-container-low {{ background: rgba(25,27,34,0.45) !important; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }}
+.bg-surface-container-high {{ background: rgba(40,42,48,0.5) !important; }}
+.bg-surface-container-highest {{ background: rgba(51,52,59,0.5) !important; }}
+.bg-surface-container-lowest {{ background: rgba(12,14,20,0.5) !important; }}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {{ width: 5px; }}
 ::-webkit-scrollbar-track {{ background: transparent; }}
@@ -955,7 +962,7 @@ body {{ scroll-behavior: smooth; background: transparent; }}
 .material-symbols-outlined {{ font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }}
 
 /* Select dropdown dark theme */
-select {{ background-color: #0c0e14 !important; color: #e2e2eb !important; }}
+select {{ background-color: rgba(12,14,20,0.7) !important; color: #e2e2eb !important; }}
 select option {{ background-color: #0c0e14; color: #e2e2eb; padding: 8px; }}
 select option:hover {{ background-color: #1e1f26; }}
 select:focus {{ border-color: rgba(79,143,247,0.4) !important; box-shadow: 0 0 0 2px rgba(79,143,247,0.15); }}
@@ -1138,10 +1145,10 @@ header, main, footer, .tab-content {{ position: relative; z-index: 10; pointer-e
 
 <!-- CHART FIRST — No scrolling needed -->
 <section>
-  <div style="background:rgba(8,10,16,0.9);backdrop-filter:blur(20px);border:1px solid rgba(66,71,83,0.1);border-radius:16px;overflow:hidden">
+  <div style="background:rgba(8,10,16,0.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(66,71,83,0.1);border-radius:16px;overflow:hidden">
 
     <!-- Index ticker strip inside chart card -->
-    <div class="flex flex-wrap items-center gap-3 px-4 py-2 border-b border-outline-variant/5" style="background:rgba(12,14,20,0.6)">
+    <div class="flex flex-wrap items-center gap-3 px-4 py-2 border-b border-outline-variant/5" style="background:rgba(12,14,20,0.4)">
       {index_cards_html}
       <div style="width:1px;height:24px;background:rgba(66,71,83,0.15);margin:0 4px" class="hidden lg:block"></div>
       <div class="flex items-center gap-1.5 text-xs font-label">
@@ -1174,7 +1181,7 @@ header, main, footer, .tab-content {{ position: relative; z-index: 10; pointer-e
     </div>
 
     <!-- Toolbar -->
-    <div class="flex flex-wrap items-center gap-1.5 px-5 py-2 border-y border-outline-variant/5" style="background:rgba(15,17,25,0.5)">
+    <div class="flex flex-wrap items-center gap-1.5 px-5 py-2 border-y border-outline-variant/5" style="background:rgba(15,17,25,0.3)">
       <!-- Chart type -->
       <div class="flex rounded-md overflow-hidden border border-outline-variant/15" style="font-size:11px">
         <button onclick="setChartType('candle')" id="ct-candle" class="ct-btn px-2.5 py-1 font-label font-semibold text-[#4f8ff7]" style="background:rgba(79,143,247,0.12)">
@@ -1396,11 +1403,11 @@ header, main, footer, .tab-content {{ position: relative; z-index: 10; pointer-e
       <div class="relative flex-1 md:flex-none">
         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
         <input id="stockSearch" type="text" placeholder="Search..."
-          class="pl-9 pr-3 py-2 bg-[#0f1119] border border-outline-variant/15 rounded-lg text-sm font-label text-on-surface placeholder:text-outline/50 focus:outline-none focus:border-primary-container/50 focus:ring-1 focus:ring-primary-container/20 w-full md:w-44 transition-all"
+          class="pl-9 pr-3 py-2 bg-black/40 border border-outline-variant/15 rounded-lg text-sm font-label text-on-surface placeholder:text-outline/50 focus:outline-none focus:border-primary-container/50 focus:ring-1 focus:ring-primary-container/20 w-full md:w-44 transition-all"
           oninput="filterStocks()">
       </div>
       <select id="sectorFilter" onchange="filterStocks()"
-        class="px-3 py-2 bg-[#0f1119] border border-outline-variant/15 rounded-lg text-sm font-label text-on-surface focus:outline-none focus:border-primary-container/50 appearance-none cursor-pointer">
+        class="px-3 py-2 bg-black/40 border border-outline-variant/15 rounded-lg text-sm font-label text-on-surface focus:outline-none focus:border-primary-container/50 appearance-none cursor-pointer">
         <option value="">All Sectors</option>
         <option value="banking">Banking</option>
         <option value="hydro">Hydro</option>
@@ -1414,16 +1421,16 @@ header, main, footer, .tab-content {{ position: relative; z-index: 10; pointer-e
         <option value="non-life">Non-Life Ins</option>
         <option value="other">Other</option>
       </select>
-      <div class="hidden md:flex items-center gap-1 text-[10px] font-label text-outline bg-[#0f1119] border border-outline-variant/15 rounded-lg px-3">
+      <div class="hidden md:flex items-center gap-1 text-[10px] font-label text-outline bg-black/40 border border-outline-variant/15 rounded-lg px-3">
         <span id="stockCount">{total_stocks}</span> stocks
       </div>
     </div>
   </div>
-  <div style="background:rgba(15,17,25,0.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(66,71,83,0.12);border-radius:16px;overflow:hidden">
+  <div style="background:rgba(15,17,25,0.5);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(66,71,83,0.12);border-radius:16px;overflow:hidden">
     <div class="overflow-x-auto" style="max-height:560px;overflow-y:auto" id="stockScroller">
       <table class="w-full text-left font-label" id="stockTable" style="border-collapse:separate;border-spacing:0">
         <thead style="position:sticky;top:0;z-index:2">
-          <tr style="background:rgba(15,17,25,0.95);backdrop-filter:blur(8px)">
+          <tr style="background:rgba(15,17,25,0.6);backdrop-filter:blur(8px)">
             <th class="px-4 py-3 text-[10px] uppercase tracking-wider text-outline font-semibold cursor-pointer hover:text-primary transition-colors border-b border-outline-variant/10" onclick="sortStocks('sym')">
               <span class="flex items-center gap-1">Symbol <span class="material-symbols-outlined text-[10px]">unfold_more</span></span></th>
             <th class="px-3 py-3 text-[10px] uppercase tracking-wider text-outline font-semibold hidden sm:table-cell border-b border-outline-variant/10">Sector</th>
@@ -1447,7 +1454,7 @@ header, main, footer, .tab-content {{ position: relative; z-index: 10; pointer-e
         </tbody>
       </table>
     </div>
-    <div class="flex items-center justify-between px-4 py-2.5 border-t border-outline-variant/8 text-[10px] font-label" style="background:rgba(15,17,25,0.9)">
+    <div class="flex items-center justify-between px-4 py-2.5 border-t border-outline-variant/8 text-[10px] font-label" style="background:rgba(15,17,25,0.5)">
       <span class="text-outline">Showing <span class="text-on-surface-variant font-semibold" id="stockCountBottom">{total_stocks}</span> of {total_stocks} stocks</span>
       <span class="text-outline hidden sm:inline">Click headers to sort &middot; Click row to expand &middot; Type to search</span>
     </div>
@@ -2105,7 +2112,7 @@ function toggleDetail(tr, sym) {{
   const detailTd = document.createElement('td');
   detailTd.setAttribute('colspan', colCount);
   detailTd.className = 'px-4 py-4';
-  detailTd.style.background = 'rgba(30,31,38,0.6)';
+  detailTd.style.background = 'rgba(30,31,38,0.4)';
   detailTd.style.borderBottom = '1px solid rgba(66,71,83,0.15)';
 
   const data = stockData[sym];
