@@ -243,14 +243,21 @@ def generate():
     evaluated = [s for s in signals if s.get("hit") is not None]
     sig_hit_rate = sum(1 for s in evaluated if s.get("hit")) / len(evaluated) * 100 if evaluated else 0
 
-    # ── Personal portfolio ────────────────────────────────────────────────
-    portfolio_holdings = [
-        {"symbol": "ALICL", "shares": 8046, "wacc": 549.87},
-        {"symbol": "TTL",   "shares": 368,  "wacc": 922.92},
-        {"symbol": "NLIC",  "shares": 273,  "wacc": 746.84},
-        {"symbol": "BPCL",  "shares": 200,  "wacc": 535.18},
-        {"symbol": "BARUN", "shares": 400,  "wacc": 391.41},
-    ]
+    # ── Personal portfolio (from portfolio/config.py) ───────────────────
+    try:
+        from portfolio.config import PORTFOLIO as _PORT_CFG
+        portfolio_holdings = [
+            {"symbol": sym, "shares": p["shares"], "wacc": p["wacc"]}
+            for sym, p in _PORT_CFG.items()
+        ]
+    except ImportError:
+        portfolio_holdings = [
+            {"symbol": "ALICL", "shares": 8046, "wacc": 549.87},
+            {"symbol": "TTL",   "shares": 368,  "wacc": 922.92},
+            {"symbol": "NLIC",  "shares": 273,  "wacc": 746.84},
+            {"symbol": "BPCL",  "shares": 200,  "wacc": 535.18},
+            {"symbol": "BARUN", "shares": 400,  "wacc": 391.41},
+        ]
 
     # ── Build HTML sections ───────────────────────────────────────────────
 
@@ -1252,6 +1259,11 @@ header, main, footer, .tab-content {{ position: relative; z-index: 10; pointer-e
       <div style="height:280px"><canvas id="sectorChart"></canvas></div>
     </div>
   </div>
+  <!-- Breadth Chart (Advancing vs Declining) -->
+  <div class="glass-card p-6 rounded-2xl">
+    <h3 class="text-lg font-headline font-bold mb-4">Market Breadth <span class="text-sm font-normal text-outline ml-2">(30 days)</span></h3>
+    <div style="height:200px"><canvas id="breadthChart"></canvas></div>
+  </div>
 </section>
 
 <!-- Top Movers -->
@@ -1513,7 +1525,20 @@ header, main, footer, .tab-content {{ position: relative; z-index: 10; pointer-e
     <span class="px-3 py-1 bg-surface-container-highest border border-outline-variant/20 rounded-full text-xs font-label text-on-surface-variant">{latest_date}</span>
   </div>
   <div class="glass-card rounded-2xl overflow-hidden p-1">
-    <iframe class="newsletter-frame" srcdoc='{newsletter_html_escaped}'></iframe>
+    <iframe class="newsletter-frame" srcdoc='{newsletter_html_escaped}' scrolling="yes" style="overflow:auto"></iframe>
+    <script>
+    // Auto-resize newsletter iframe to fit content
+    (function(){{
+      const nf = document.querySelector('.newsletter-frame');
+      if (!nf) return;
+      nf.addEventListener('load', function() {{
+        try {{
+          const h = nf.contentDocument.body.scrollHeight;
+          if (h > 100) nf.style.height = Math.min(h + 40, 2000) + 'px';
+        }} catch(e) {{}}
+      }});
+    }})();
+    </script>
   </div>
 </div>
 </div><!-- end newsletter tab -->
@@ -1740,6 +1765,7 @@ try {{
     }} else {{
       // Fetch on demand if not cached
       if (!stockCache[sym]) {{
+        document.getElementById('tv-change').textContent = 'Loading...';
         try {{
           const safeSym = sym.replace('/', '_');
           const resp = await fetch('stockdata/' + safeSym + '.json');
@@ -1915,6 +1941,19 @@ try {{ new Chart(document.getElementById('sectorChart'),{{
   }}
 }}); }} catch(e) {{ console.warn("Chart error:", e); }}
 
+// Breadth chart (advancing vs declining)
+try {{ new Chart(document.getElementById('breadthChart'),{{
+  type:'bar',
+  data:{{ labels:{breadth_labels}, datasets:[
+    {{ label:'Advancing', data:{breadth_g}, backgroundColor:'rgba(0,228,117,0.6)', borderRadius:2 }},
+    {{ label:'Declining', data:{breadth_l}, backgroundColor:'rgba(255,180,171,0.6)', borderRadius:2 }}
+  ] }},
+  options:{{ responsive:true, maintainAspectRatio:false,
+    scales:{{ x:{{stacked:true, grid:{{display:false}}, ticks:{{maxTicksLimit:8}} }}, y:{{stacked:true, grid:{{color:'rgba(66,71,83,0.1)'}} }} }},
+    plugins:{{ legend:{{position:'top', labels:{{boxWidth:12, padding:8, color:'#8c909e'}} }} }}
+  }}
+}}); }} catch(e) {{ console.warn("Breadth chart error:", e); }}
+
 const eqGrad = document.getElementById('equityChart').getContext('2d').createLinearGradient(0,0,0,250);
 eqGrad.addColorStop(0,'rgba(79,143,247,0.3)');
 eqGrad.addColorStop(1,'rgba(79,143,247,0.0)');
@@ -1979,8 +2018,16 @@ function sortStocks(key) {{
     }}
     const cells = {{ ltp: 2, chg: 3, vol: 8, turn: 9, rsi: 10 }};
     const ci = cells[key] || 2;
-    va = parseFloat(a.children[ci]?.textContent.replace(/[^0-9.\\-]/g, '') || '0');
-    vb = parseFloat(b.children[ci]?.textContent.replace(/[^0-9.\\-]/g, '') || '0');
+    function parseVal(el) {{
+      const t = (el.children[ci]?.textContent || '0').trim();
+      let n = parseFloat(t.replace(/[^0-9.\\-]/g, '') || '0');
+      if (t.includes('B')) n *= 1e9;
+      else if (t.includes('M')) n *= 1e6;
+      else if (t.includes('K')) n *= 1e3;
+      return n;
+    }}
+    va = parseVal(a);
+    vb = parseVal(b);
     return sortDir[key] ? va - vb : vb - va;
   }});
   rows.forEach(r => tbody.appendChild(r));
@@ -2079,9 +2126,10 @@ function toggleDetail(tr, sym) {{
 
     // Render chart lazily
     setTimeout(function() {{
+      try {{
       const canvas = document.getElementById(chartId);
-      if (!canvas) return;
-      const ret = data.closes.length >= 2 ? (data.closes[data.closes.length-1] / data.closes[0] - 1) * 100 : 0;
+      if (!canvas || !data.closes || data.closes.length < 2) return;
+      const ret = (data.closes[data.closes.length-1] / data.closes[0] - 1) * 100;
       const color = ret >= 0 ? '#00e475' : '#ff5252';
       const grad = canvas.getContext('2d').createLinearGradient(0,0,0,160);
       grad.addColorStop(0, color + '22');
@@ -2097,6 +2145,7 @@ function toggleDetail(tr, sym) {{
           scales: {{ x: {{display: false}}, y: {{ grid: {{color:'rgba(66,71,83,0.08)'}}, ticks: {{font:{{size:9}}}} }} }}
         }}
       }});
+      }} catch(e) {{ console.warn('Detail chart error:', e); }}
     }}, 50);
   }} else {{
     // Simple text detail for stocks outside top 50

@@ -47,7 +47,7 @@ NEPSE is a frontier market with 310+ listed securities, thin liquidity, strong s
 
 The system combines **three independent signal sources** — a cross-sectional XGBoost/LightGBM ensemble, per-stock GRU deep learning models, and classical technical analysis — blended through a regime-aware ranking engine. **Claude Sonnet 4.6** (via Anthropic API) generates actionable rationales with specific buy ranges, targets, and stop losses for each pick. Falls back to a local Qwen 2.5 14B model via Ollama when the API is unavailable. The final output is an HTML email with ranked picks, exact entry/exit levels, Kelly-optimal position sizes, and live portfolio P&L.
 
-Everything runs on a single machine with an NVIDIA Titan RTX. No cloud. No API costs. No data leaves the server.
+Everything runs on a single machine with an NVIDIA Titan RTX. Claude Sonnet 4.6 API (~$1.32/month) provides rationales and news analysis; Qwen 2.5 14B runs locally as fallback.
 
 ### At a glance
 
@@ -157,7 +157,7 @@ Every trading morning, this lands in your inbox — a complete scan of the marke
 └───────────────────────────────────────────────────────────────────────────┘
 ```
 
-Each pick includes a 2-sentence LLM rationale generated locally — no API calls, no data leakage. The portfolio section tracks your actual holdings with live P&L.
+Each pick includes a 2-sentence LLM rationale from Claude Sonnet 4.6 (falls back to local Qwen 2.5 14B if API unavailable). The portfolio section tracks your actual holdings with live P&L.
 
 ### My current portfolio
 
@@ -584,7 +584,7 @@ Returns: market outlook (BULLISH/BEARISH/NEUTRAL), impact score (-10 to +10), af
 ## 🔒 Security
 
 - All credentials in `.env`, never committed (`.gitignore`)
-- Claude API for analysis, Qwen 2.5 14B runs locally as fallback — no raw data sent externally
+- Claude Sonnet 4.6 API for rationales and news analysis; Qwen 2.5 14B runs locally as fallback
 - MeroShare auth via CDSC REST API with JWT tokens
 - All data fetched over HTTPS
 - Telegram Bot API (free, no data stored on Telegram servers)
@@ -601,6 +601,6 @@ This system is for **educational and research purposes only**. It does not const
 
 **Built for Nepal's growing retail investor community**
 
-*Data refreshed daily · Models retrained daily · LLM runs locally · Your data never leaves your machine*
+*Data refreshed daily · Models retrained daily · Claude Sonnet 4.6 + local Qwen 2.5 14B fallback*
 
 </div>

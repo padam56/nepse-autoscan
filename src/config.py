@@ -1,13 +1,12 @@
 """Configuration for NEPSE stock analysis toolkit."""
 
-# ── Your Position ──────────────────────────────────────────────
-PORTFOLIO = {
-    "ALICL": {
-        "shares": 8046,
-        "wacc": 549.8693,
-        "total_cost": 4424248.1614,
+# ── Your Position (canonical source: portfolio/config.py) ─────
+try:
+    from portfolio.config import PORTFOLIO
+except ImportError:
+    PORTFOLIO = {
+        "ALICL": {"shares": 8046, "wacc": 549.87, "total_cost": 4_424_248.16},
     }
-}
 
 # ── Data Sources ───────────────────────────────────────────────
 MEROLAGANI_BASE = "https://www.merolagani.com"

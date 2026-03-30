@@ -152,14 +152,22 @@ else:
 # Kelly fraction cap (never risk more than 15% per trade)
 MAX_KELLY   = 0.15
 
-# ── Portfolio (update via trade_report.py or manually) ───────────────────────
-PORTFOLIO: Dict[str, dict] = {
-    "ALICL": {"shares": 8046,  "wacc": 549.87},
-    "TTL":   {"shares": 368,   "wacc": 922.92},
-    "NLIC":  {"shares": 273,   "wacc": 746.84},
-    "BPCL":  {"shares": 200,   "wacc": 535.18},
-    "BARUN": {"shares": 400,   "wacc": 391.41},
-}
+# ── Portfolio (loaded from portfolio/config.py) ──────────────────────────────
+try:
+    sys.path.insert(0, str(ROOT))
+    from portfolio.config import PORTFOLIO as _FULL_PORTFOLIO
+    PORTFOLIO: Dict[str, dict] = {
+        sym: {"shares": p["shares"], "wacc": p["wacc"]}
+        for sym, p in _FULL_PORTFOLIO.items()
+    }
+except ImportError:
+    PORTFOLIO: Dict[str, dict] = {
+        "ALICL": {"shares": 8046,  "wacc": 549.87},
+        "TTL":   {"shares": 368,   "wacc": 922.92},
+        "NLIC":  {"shares": 273,   "wacc": 746.84},
+        "BPCL":  {"shares": 200,   "wacc": 535.18},
+        "BARUN": {"shares": 400,   "wacc": 391.41},
+    }
 
 # ── Email config (from environment / .env) ────────────────────────────────────
 EMAIL_FROM     = os.getenv("EMAIL_FROM",    "")
@@ -1725,6 +1733,7 @@ def run_scanner(
             'symbol': p['symbol'], 'signal': p['signal'], 'score': p['score'],
             'ta': p['ta_score'], 'ml': p['ml_score'],
             'gru': p.get('gru_score'), 'kelly_pct': p['kelly_pct'],
+            'price_at_signal': p.get('price', live.get(p['symbol'], {}).get('price', 0)),
         } for p in top_picks])
         tracker.evaluate_pending(histories)
         tracker_stats = tracker.get_stats(30)
