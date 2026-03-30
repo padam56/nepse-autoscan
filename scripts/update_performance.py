@@ -178,15 +178,22 @@ This is a simulation. Past performance does not predict future results.
     return md
 
 
+AUTO_COMMIT_PREFIX = "Daily auto-update"
+
+
 def git_commit_and_push():
-    """Commit PERFORMANCE.md and push to GitHub."""
+    """Commit dashboard + performance data and push to GitHub.
+
+    If the last commit was a daily auto-update, amend it instead of
+    creating a new one.  This keeps the git history clean -- only one
+    auto-update commit exists at any time.
+    """
     os.chdir(str(ROOT))
     try:
         # Check if there are changes
         result = subprocess.run(['git', 'diff', '--quiet', 'PERFORMANCE.md', 'docs/'],
                                 capture_output=True)
         if result.returncode == 0:
-            # Also check for untracked stockdata files
             untracked = subprocess.run(['git', 'ls-files', '--others', '--exclude-standard', 'docs/'],
                                        capture_output=True, text=True)
             if not untracked.stdout.strip():
@@ -196,10 +203,20 @@ def git_commit_and_push():
         today = datetime.now().strftime("%Y-%m-%d")
         subprocess.run(['git', 'add', 'PERFORMANCE.md', 'docs/'], check=True,
                         capture_output=True)
-        subprocess.run(['git', 'commit', '-m',
-                        f'Update paper trading performance ({today})'],
-                        check=True, capture_output=True)
-        result = subprocess.run(['git', 'push', 'origin', 'main'],
+
+        # Check if last commit was an auto-update -- if so, amend it
+        last_msg = subprocess.run(['git', 'log', '-1', '--format=%s'],
+                                  capture_output=True, text=True).stdout.strip()
+        if last_msg.startswith(AUTO_COMMIT_PREFIX):
+            subprocess.run(['git', 'commit', '--amend', '--no-edit',
+                            '-m', f'{AUTO_COMMIT_PREFIX} ({today})'],
+                           check=True, capture_output=True)
+        else:
+            subprocess.run(['git', 'commit', '-m',
+                            f'{AUTO_COMMIT_PREFIX} ({today})'],
+                           check=True, capture_output=True)
+
+        result = subprocess.run(['git', 'push', '--force-with-lease', 'origin', 'main'],
                                 capture_output=True, text=True, timeout=30)
         if result.returncode == 0:
             print("[PERF] Pushed to GitHub")
