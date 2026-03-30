@@ -866,37 +866,21 @@ def _build_gru_sequence_fallback(recs: list, lookback: int = 15) -> Optional[np.
 
 def fetch_live_prices() -> Dict[str, dict]:
     """
-    Fetch real-time prices from MeroLagani API.
-    Returns {symbol: {price, change_pct, volume, h, l, op, t}}.
+    Fetch real-time prices from Sharesansar live trading page.
+    Returns {symbol: {price, change_pct, volume, lp, pc, h, l, op, q, t}}.
     """
     try:
-        import urllib.request
-        url = "https://merolagani.com/handlers/webrequesthandler.ashx?type=market_summary"
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            data = json.loads(resp.read().decode())
-
+        from src.live_prices import fetch_live_prices as _sharesansar_fetch
+        raw = _sharesansar_fetch()
+        # Add "price" and "change_pct" keys expected by portfolio_status / paper_trader
         live = {}
-        for item in data.get("market", {}).get("stock", {}).get("detail", []):
-            sym = item.get("s", "")
-            lp  = item.get("lp", 0)
-            c   = item.get("c",  0)
-            q   = item.get("q",  0)
-            if sym and lp:
-                base = lp - c
-                pct  = (c / base * 100) if base > 0 else 0.0
-                live[sym] = {
-                    "price":      float(lp),
-                    "change_pct": round(pct, 2),
-                    "volume":     int(q),
-                    "lp": float(lp),
-                    "pc": round(pct, 2),
-                    "h":  float(item.get("h",  lp)),
-                    "l":  float(item.get("l",  lp)),
-                    "op": float(item.get("op", lp)),
-                    "q":  float(q),
-                    "t":  float(item.get("t",  0)),
-                }
+        for sym, d in raw.items():
+            entry = dict(d)
+            entry["price"] = float(d.get("lp", 0))
+            entry["change_pct"] = float(d.get("pc", 0))
+            entry["volume"] = int(d.get("q", 0))
+            live[sym] = entry
+        print(f"[LIVE] Fetched {len(live)} stocks from Sharesansar")
         return live
     except Exception as e:
         print(f"[LIVE] Price fetch failed: {e}")
