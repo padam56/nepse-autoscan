@@ -65,7 +65,7 @@ Everything runs on a single machine with an NVIDIA Titan RTX. No cloud. No API c
 | **Filters** | IPO pump detection, debenture/fund exclusion, sector cap, corporate events |
 | **Training** | 310 GRU models in ~3 minutes (8-process parallel, FP16) |
 | **Live Data** | Real-time prices from Sharesansar live trading page |
-| **Tests** | 113 unit tests covering edge cases across all core modules |
+| **Tests** | 148 unit tests covering edge cases across all core modules |
 | **Cost** | ~$1.32/month (Claude API + Telegram free + GitHub Pages free) |
 
 ---
@@ -74,31 +74,37 @@ Everything runs on a single machine with an NVIDIA Titan RTX. No cloud. No API c
 
 The daily pipeline runs in 9 steps, from raw price data to an email in your inbox:
 
-```
- Price History ──> Quality Gate ──> Feature Engine (56 feats) ──> Feature Selector (top 40)
-       │                                    │
-       │                          ┌─────────┼─────────┬──────────┐
-       │                          ▼         ▼         ▼          ▼
-       │                      XGBoost    310 GRU   Transformer   TA
-       │                      + LGB     (calibr.)  (attention)  Score
-       │                          │         │         │          │
-       │                          └─────────┴─────────┴──────────┘
-       │                                         │
-       └──> News Sentiment ──────────>  Ensemble Ranker (learned weights)
-                                         + Market Regime (GMM+HMM)
-                                                 │
-                                        Sector Cap (max 3/sector)
-                                                 │
-                                        Kelly Sizer + Drawdown Brake
-                                                 │
-                                  ┌──────────────┼──────────────┐
-                                  ▼              ▼              ▼
-                             Email Report   Telegram Bot   Dashboard
-                                  │              │              │
-                                  └──────────────┴──────────────┘
-                                                 │
-                                    Signal Tracker ──feedback──> Ensemble
-                                    Paper Trader ──> PERFORMANCE.md
+```mermaid
+flowchart TD
+    A[Price History\nOHLCV for 310+ stocks] --> B[Quality Gate\n6 sanity checks]
+    B --> C[Feature Engine\n56 features]
+    C --> D[Feature Selector\ntop 40 features]
+
+    D --> E[XGBoost + LightGBM\ncross-sectional GPU]
+    D --> F[310 GRU Models\nisotonic calibration]
+    D --> G[Transformer\nmulti-head attention]
+    D --> H[TA Composite\nmomentum · trend · volume]
+
+    A --> I[News Sentiment\n5 sources + Claude AI]
+
+    E --> J[Ensemble Ranker\nlearned weights + Market Regime]
+    F --> J
+    G --> J
+    H --> J
+    I --> J
+
+    J --> K[Sector Cap\nmax 3 per sector]
+    K --> L[Kelly Sizer + Drawdown Brake]
+
+    L --> M[Email Report]
+    L --> N[Telegram Bot]
+    L --> O[Live Dashboard]
+
+    M --> P[Signal Tracker]
+    N --> P
+    O --> P
+    P -->|feedback| J
+    P --> Q[Paper Trader]
 ```
 
 **Step by step:**
@@ -368,7 +374,7 @@ nepse-autoscan/
 ├── llm/                         # Claude Sonnet 4.6 (API) + Qwen 2.5 14B (local fallback)
 ├── alerts/                      # HTML email report templates
 ├── portfolio/                   # Portfolio config and multi-stock tracker
-├── tests/                       # 113 unit tests (pytest)
+├── tests/                       # 148 unit tests (pytest)
 │   ├── test_technical.py        # Bollinger, RSI, MACD edge cases
 │   ├── test_signals.py          # Signal generation, division-by-zero
 │   ├── test_ml.py               # Feature computation, regime detection
@@ -381,40 +387,57 @@ nepse-autoscan/
 
 ### Data flow
 
-```
- ┌─────────────────────────────────────────────────────────────────────┐
- │  DATA SOURCES                                                      │
- │  Sharesansar (OHLCV) ─┐                                           │
- │  MeroLagani (live)  ───┤──> Data Quality Gate ──> Feature Engine   │
- │  News (sentiment)  ────┘    (6 sanity checks)     (56 features)    │
- │                                                        │           │
- │  MeroShare (portfolio) ──────────────────────┐         │           │
- ├────────────────────────────────────────────── │ ────────┤───────────┤
- │  MODELS                                      │         ▼           │
- │                                               │   Feature Selector │
- │  ┌──────────┐ ┌──────────┐ ┌───────────┐    │   (top 40 feats)   │
- │  │ XGBoost  │ │ 310 GRU  │ │Transformer│    │         │           │
- │  │+ LightGBM│ │(calibr.) │ │(attention)│    │         │           │
- │  └────┬─────┘ └────┬─────┘ └─────┬─────┘    │         │           │
- │       │            │             │           │         │           │
- │  ┌────┴─────┐ ┌────┘      ┌──────┘           │         │           │
- │  │TA Score  │ │           │                  │         │           │
- │  └────┬─────┘ │           │  Regime (GMM)    │         │           │
- ├───────┴───────┴───────────┴──────┬───────────┴─────────┘───────────┤
- │  RISK & RANKING                  ▼                                 │
- │                          Ensemble Ranker (learned weights)         │
- │                                  │                                 │
- │                          Sector Cap (max 3/sector)                 │
- │                                  │                                 │
- │                          Kelly Sizer + Drawdown Brake              │
- │                                  │                                 │
- │                          Claude Sonnet 4.6 + Qwen fallback         │
- ├──────────────────────────────────┼─────────────────────────────────┤
- │  OUTPUT                          ▼                                 │
- │              Email + Telegram Bot + Dashboard + Console            │
- │                                  │                                 │
- │                    Signal Tracker ───feedback───> Ensemble          │
- └─────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph sources["DATA SOURCES"]
+        S1[Sharesansar\nOHLCV data]
+        S2[Sharesansar Live\nreal-time prices]
+        S3[News Sources\n5 sites + Claude AI]
+        S4[MeroShare\nportfolio sync]
+    end
+
+    subgraph models["MODELS"]
+        FS[Feature Selector\ntop 40 features]
+        XGB[XGBoost + LightGBM\nGPU parallel]
+        GRU[310 GRU Models\ncalibrated]
+        TF[Transformer\nattention]
+        TA[TA Composite Score]
+        REG[Regime Detector\nGMM + HMM]
+    end
+
+    subgraph risk["RISK & RANKING"]
+        ENS[Ensemble Ranker\nlearned weights]
+        SEC[Sector Cap\nmax 3 per sector]
+        KEL[Kelly Sizer + Drawdown Brake]
+        LLM[Claude Sonnet 4.6\n+ Qwen fallback]
+    end
+
+    subgraph output["OUTPUT"]
+        OUT[Email + Telegram + Dashboard + Console]
+        SIG[Signal Tracker]
+    end
+
+    S1 --> DQ[Data Quality Gate\n6 checks]
+    S2 --> DQ
+    DQ --> FE[Feature Engine\n56 features]
+    FE --> FS
+
+    FS --> XGB
+    FS --> GRU
+    FS --> TF
+    FS --> TA
+
+    XGB --> ENS
+    GRU --> ENS
+    TF --> ENS
+    TA --> ENS
+    S3 --> ENS
+    REG --> ENS
+    S4 --> OUT
+
+    ENS --> SEC --> KEL --> LLM --> OUT
+    OUT --> SIG
+    SIG -->|feedback| ENS
 ```
 
 ### Paper Trading Simulator

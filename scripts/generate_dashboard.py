@@ -1295,20 +1295,7 @@ header, main, footer, .tab-content {{ position: relative; z-index: 10; pointer-e
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">{ai_cards_html}</div>
 </section>
 
-<!-- Market Index + Price Charts -->
-<section class="space-y-6">
-  <div class="flex items-center justify-between">
-    <div>
-      <h2 class="text-2xl font-headline font-black">Market Pulse</h2>
-      <p class="text-on-surface-variant text-sm font-label">30-day average price trend across {total_stocks} stocks</p>
-    </div>
-    <span class="{('text-tertiary' if index_ret >= 0 else 'text-error')} font-bold font-headline text-xl">{index_ret:+.1f}%</span>
-  </div>
-  <div class="glass-card rounded-2xl p-6">
-    <div style="height:180px"><canvas id="indexChart"></canvas></div>
-  </div>
-</section>
-
+<!-- Price Charts -->
 <section class="space-y-6">
   <div>
     <h2 class="text-2xl font-headline font-black">Price Charts</h2>
@@ -1972,23 +1959,6 @@ function sortStocks(key) {{
   }});
   rows.forEach(r => tbody.appendChild(r));
 }}
-
-// Market Index Chart
-const idxGrad = document.getElementById('indexChart').getContext('2d').createLinearGradient(0,0,0,180);
-idxGrad.addColorStop(0, '{index_color}22');
-idxGrad.addColorStop(1, '{index_color}02');
-try {{ new Chart(document.getElementById('indexChart'),{{
-  type:'line',
-  data:{{ labels:{index_labels_json}, datasets:[{{
-    label:'Avg Price', data:{index_values_json}, borderColor:'{index_color}',
-    borderWidth:2, fill:true, backgroundColor:idxGrad, tension:.3, pointRadius:0
-  }}] }},
-  options:{{ responsive:true, maintainAspectRatio:false,
-    plugins:{{ legend:{{display:false}} }},
-    scales:{{ x:{{grid:{{display:false}}, ticks:{{maxTicksLimit:8,font:{{size:10}}}}}},
-              y:{{grid:{{color:'rgba(66,71,83,0.1)'}}, ticks:{{font:{{size:10}}}} }} }}
-  }}
-}}); }} catch(e) {{ console.warn("Chart error:", e); }}
 
 // Tab switching
 function switchTab(tab, btn) {{
