@@ -338,19 +338,23 @@ def compute_ta_score(recs: list) -> Tuple[float, str, List[str]]:
     ret5  = (c[-1] / c[-6]  - 1) * 100 if n > 5  else 0.0
     ret20 = (c[-1] / c[-21] - 1) * 100 if n > 20 else 0.0
 
-    # RSI: 40–65 is ideal entry zone (not overbought, momentum confirmed)
-    if   rsi >= 65: rsi_s = 60
-    elif rsi >= 50: rsi_s = 80
-    elif rsi >= 40: rsi_s = 65
-    elif rsi >= 30: rsi_s = 45
-    else:           rsi_s = 20
+    # RSI: 35–55 is ideal entry (room to run, not extended)
+    # Penalize overbought (>70) and deep oversold (<25)
+    if   rsi >= 70: rsi_s = 25   # overbought -- likely to pull back
+    elif rsi >= 60: rsi_s = 50   # getting stretched
+    elif rsi >= 50: rsi_s = 75   # healthy uptrend
+    elif rsi >= 40: rsi_s = 85   # ideal entry zone
+    elif rsi >= 30: rsi_s = 70   # oversold bounce candidate
+    else:           rsi_s = 40   # deeply oversold -- risky
 
-    ret5_s  = min(100, max(0, 50 + ret5  * 5))
-    ret20_s = min(100, max(0, 50 + ret20 * 2))
+    # Moderate recent returns are better than extreme (mean reversion risk)
+    ret5_s  = min(100, max(0, 50 + min(ret5, 8)  * 4))   # cap at +8%
+    ret20_s = min(100, max(0, 50 + min(ret20, 15) * 1.5)) # cap at +15%
     mom_score = 0.4 * rsi_s + 0.35 * ret5_s + 0.25 * ret20_s
 
-    if rsi >= 55: reasons.append(f"RSI bullish at {rsi:.0f}")
-    if ret5 > 2:  reasons.append(f"Up {ret5:.1f}% this week")
+    if 40 <= rsi <= 55: reasons.append(f"RSI in buy zone at {rsi:.0f}")
+    elif rsi >= 70:     reasons.append(f"RSI overbought at {rsi:.0f}")
+    if 0 < ret5 <= 5:  reasons.append(f"Up {ret5:.1f}% this week")
 
     # ── Trend ─────────────────────────────────────────────────────────────────
     ema8  = _ema(c, 8)[-1]
@@ -404,14 +408,25 @@ def compute_ta_score(recs: list) -> Tuple[float, str, List[str]]:
     high_52w = h[-min(n, 252):].max()
     dist_52w = (c[-1] / high_52w - 1) * 100   # ≤ 0
 
-    bb_s   = min(100, max(0, bb_pos * 100))
+    # BB position: 0.3-0.6 is ideal (not extended, not bottoming)
+    if   bb_pos > 0.8: bb_s = 30   # near upper band -- extended
+    elif bb_pos > 0.6: bb_s = 60   # above midline -- healthy
+    elif bb_pos > 0.4: bb_s = 85   # near midline -- ideal entry
+    elif bb_pos > 0.2: bb_s = 70   # below midline -- value zone
+    else:              bb_s = 40   # near lower band -- falling knife risk
+
     wr_s   = min(100, max(0, (wr + 100)))       # wr in -100..0 → 0..100
-    h52_s  = min(100, max(0, 100 + dist_52w * 2))  # near high = high score
+
+    # 52w proximity: -10% to -30% from high is ideal (not at top, not crashed)
+    if   dist_52w > -3:  h52_s = 40   # too close to high -- likely to fade
+    elif dist_52w > -10: h52_s = 80   # healthy pullback from high
+    elif dist_52w > -25: h52_s = 65   # deeper pullback -- value if trend intact
+    else:                h52_s = 30   # crashed -- structural damage
 
     struct_score = 0.35 * bb_s + 0.30 * wr_s + 0.35 * h52_s
 
-    if bb_pos > 0.6:    reasons.append(f"Above BB midline (pos={bb_pos:.2f})")
-    if dist_52w > -5:   reasons.append(f"Near 52-week high ({dist_52w:.1f}%)")
+    if 0.3 <= bb_pos <= 0.6: reasons.append(f"BB midline zone (pos={bb_pos:.2f})")
+    if -15 < dist_52w < -5:  reasons.append(f"Healthy pullback ({dist_52w:.1f}% from 52w high)")
 
     # ── Final ─────────────────────────────────────────────────────────────────
     total = 0.30 * mom_score + 0.25 * trend_score + 0.20 * vol_score + 0.25 * struct_score
