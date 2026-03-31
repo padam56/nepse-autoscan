@@ -1184,17 +1184,30 @@ def walk_forward_backtest(histories: Dict[str, list]) -> dict:
         if len(snap) < 10:
             continue
 
-        # Quick TA scoring
-        ta_raw = {}
+        # Cross-sectional scoring: rank by composite of momentum + value
+        scored = {}
         for sym, recs in snap.items():
             try:
-                sc, sig, _ = compute_ta_score(recs)
-                ta_raw[sym] = (sc, sig, [])
+                c, h_arr, l_arr, o_arr, vol = get_arrays(recs)
+                if len(c) < 30 or c[-1] < 50 or c[-1] > 1500:
+                    continue
+                if vol[-20:].mean() < 500:
+                    continue
+                ret5 = (c[-1] / c[-6] - 1) if len(c) > 5 else 0
+                ret20 = (c[-1] / c[-21] - 1) if len(c) > 20 else 0
+                rsi = _rsi(c, 14)
+                vol_ratio = vol[-1] / (vol[-20:].mean() + 1) if len(vol) >= 20 else 1
+                # Penalize extremes, reward moderate setups
+                rsi_penalty = -abs(rsi - 48) * 0.5  # best at RSI 48
+                scored[sym] = ret5 * 30 + ret20 * 10 + rsi_penalty + min(vol_ratio, 3) * 5
             except Exception:
-                ta_raw[sym] = (50, "NEUTRAL", [])
+                continue
 
-        # Pick top 5 by TA score
-        top5 = sorted(ta_raw.keys(), key=lambda s: ta_raw[s][0], reverse=True)[:5]
+        if len(scored) < 5:
+            continue
+
+        # Pick top 5 by cross-sectional score
+        top5 = sorted(scored, key=scored.get, reverse=True)[:5]
 
         # Compute forward returns
         week_rets = []
