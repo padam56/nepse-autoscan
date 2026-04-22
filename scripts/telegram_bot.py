@@ -81,12 +81,26 @@ TRADING_DAYS = {6, 0, 1, 2, 3}  # Sun=6, Mon=0, Tue=1, Wed=2, Thu=3
 # TELEGRAM MESSAGING
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def send_message(text, parse_mode="HTML"):
-    """Send a message via Telegram Bot API. Returns True on success."""
+def send_message(text, parse_mode="HTML", throttle_key=None, max_per_day=6):
+    """Send a message via Telegram Bot API. Returns True on success.
+
+    Throttle: when throttle_key is provided, dedupes by content hash and
+    caps sends per NPT day. Default cap is 6 intraday alerts/day.
+    """
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
         print("[TELEGRAM] Not configured -- skipping")
         print(f"[TELEGRAM] Would send:\n{text[:300]}")
         return False
+
+    if throttle_key:
+        try:
+            from src.email_throttle import allow
+            if not allow(f"telegram_{throttle_key}", max_per_day=max_per_day,
+                         dedupe_key=text[:200]):
+                print(f"[TELEGRAM] Throttled -- skipping duplicate/cap-reached")
+                return False
+        except Exception:
+            pass
 
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     payload = {

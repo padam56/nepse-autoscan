@@ -18,7 +18,9 @@ import json
 import os
 import sys
 import time
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
+
+NPT = timezone(timedelta(hours=5, minutes=45))
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
@@ -477,7 +479,7 @@ def build_alert_email(alerts: List[dict], portfolio_summary: dict) -> str:
       </div>
 
       <p style="text-align:center;font-size:11px;color:#999;margin-top:16px">
-        Afternoon scan ran at {datetime.now().strftime('%H:%M NPT')} |
+        Afternoon scan ran at {datetime.now(NPT).strftime('%H:%M NPT')} |
         Auto-generated -- review before acting
       </p>
     </div>
@@ -659,17 +661,29 @@ def run_afternoon_scan(send_email_flag: bool = True):
     # Compute portfolio summary
     port_summary = compute_portfolio_summary(portfolio, closing_prices)
 
-    # Step 5: Send email
+    # Step 5: Send email -- only if critical alerts AND haven't sent yet today
     print("\n[5/6] Sending email...")
+    html = build_alert_email(alerts, port_summary)
     if send_email_flag:
-        subject_prefix = "EXIT ALERT" if n_critical > 0 else "Afternoon Scan"
-        html = build_alert_email(alerts, port_summary)
-        send_email(
-            f"NEPSE {subject_prefix} -- {today}",
-            html,
-        )
+        # Dedupe: don't re-email if the same alert set already went today
+        alert_sig = ",".join(sorted(f"{a['symbol']}:{a['alert_type']}" for a in alerts))
+        try:
+            import sys as _sys
+            _sys.path.insert(0, str(ROOT))
+            from src.email_throttle import allow
+            can_send = allow("afternoon_exits", max_per_day=1, dedupe_key=alert_sig)
+        except Exception:
+            can_send = True
+
+        if can_send and (n_critical > 0 or alerts):
+            subject_prefix = "EXIT ALERT" if n_critical > 0 else "Afternoon Scan"
+            send_email(
+                f"NEPSE {subject_prefix} -- {today}",
+                html,
+            )
+        else:
+            print("[EMAIL] Afternoon email already sent today (or no alerts) -- skipping")
     else:
-        html = build_alert_email(alerts, port_summary)
         out_path = ROOT / "reports" / f"afternoon_{today}.html"
         out_path.parent.mkdir(exist_ok=True)
         out_path.write_text(html)
@@ -677,7 +691,7 @@ def run_afternoon_scan(send_email_flag: bool = True):
 
     # Step 6: Telegram (if configured and there are critical alerts)
     print("[6/6] Telegram notification...")
-    if alerts and send_email_flag:
+    if alerts and send_email_flag and n_critical > 0:
         tg_lines = [f"<b>NEPSE Afternoon Scan -- {today}</b>\n"]
         for a in alerts:
             tg_lines.append(f"<b>[{a['alert_type']}]</b> {a['symbol']} @ Rs {a['price']:.2f} ({a['pnl_pct']:+.1f}%)")

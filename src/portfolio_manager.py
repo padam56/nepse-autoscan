@@ -7,7 +7,8 @@ everything automatically. No manual database editing needed.
 
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+NPT = timezone(timedelta(hours=5, minutes=45))
 from typing import Optional
 
 DATA_DIR = "data"
@@ -44,7 +45,7 @@ class PortfolioManager:
             raise ValueError("Action must be BUY or SELL")
 
         trade = {
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.now(NPT).isoformat(),
             "action": action,
             "shares": shares,
             "price": price,
@@ -102,7 +103,7 @@ class PortfolioManager:
             "wacc": round(wacc, 2),
             "total_cost": round(total_cost, 2),
             "trades_count": len(self.trades),
-            "last_updated": datetime.now().isoformat(),
+            "last_updated": datetime.now(NPT).isoformat(),
         }
 
         self._save_position()

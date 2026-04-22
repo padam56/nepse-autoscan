@@ -10,7 +10,8 @@ Usage:
 
 import sys
 import os
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+NPT = timezone(timedelta(hours=5, minutes=45))
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 

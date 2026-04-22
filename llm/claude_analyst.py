@@ -48,6 +48,8 @@ def _call(client, system: str, prompt: str, max_tokens: int = MAX_TOKENS) -> str
 def generate_rationales(picks: List[dict], regime: str) -> Dict[str, str]:
     """Generate 2-3 sentence rationale for each top pick using Claude.
 
+    6 calls fan out in parallel via ThreadPoolExecutor (~2s vs ~12s serial).
+
     Args:
         picks: list of dicts with symbol, signal, score, ta_score, ml_score, reasons
         regime: market regime string (BULL/RANGE/BEAR)
@@ -55,6 +57,8 @@ def generate_rationales(picks: List[dict], regime: str) -> Dict[str, str]:
     Returns:
         {symbol: rationale_text}
     """
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
     client = _get_client()
     if not client:
         return {}
@@ -66,12 +70,10 @@ def generate_rationales(picks: List[dict], regime: str) -> Dict[str, str]:
         "Be specific about numbers. No generic filler."
     )
 
-    rationales = {}
-    for p in picks[:6]:
+    def _rationale_for(p: dict) -> tuple[str, str]:
         sym = p.get("symbol", "")
         reasons = p.get("reasons", [])
         reasons_str = ", ".join(reasons) if reasons else "N/A"
-
         prompt = (
             f"Stock: {sym}\n"
             f"Signal: {p.get('signal', 'N/A')} (Score: {p.get('score', 0):.0f}/100)\n"
@@ -80,10 +82,18 @@ def generate_rationales(picks: List[dict], regime: str) -> Dict[str, str]:
             f"Market Regime: {regime}\n\n"
             f"Write a 2-3 sentence rationale for this pick."
         )
+        return sym, _call(client, system, prompt, max_tokens=200)
 
-        text = _call(client, system, prompt, max_tokens=200)
-        if text:
-            rationales[sym] = text
+    rationales = {}
+    with ThreadPoolExecutor(max_workers=6) as ex:
+        futures = [ex.submit(_rationale_for, p) for p in picks[:6]]
+        for fut in as_completed(futures):
+            try:
+                sym, text = fut.result(timeout=30)
+                if text and sym:
+                    rationales[sym] = text
+            except Exception as e:
+                logger.warning("[CLAUDE] rationale failed: %s" % e)
 
     return rationales
 

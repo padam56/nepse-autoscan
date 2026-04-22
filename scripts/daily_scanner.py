@@ -607,7 +607,8 @@ def train_ensemble(
             xgb_preds = booster.predict(dval).reshape(-1, 5).argmax(axis=1)
             xgb_acc   = (xgb_preds == y_val).mean()
             dir_acc   = ((xgb_preds >= 3) == (y_val >= 3)).mean()
-            print(f"[XGB] Val acc={xgb_acc:.4f}  Dir acc={dir_acc:.4f}  ({booster.best_ntree_limit} trees)")
+            n_trees = getattr(booster, "best_iteration", None) or getattr(booster, "best_ntree_limit", None) or booster.num_boosted_rounds()
+            print(f"[XGB] Val acc={xgb_acc:.4f}  Dir acc={dir_acc:.4f}  ({n_trees} trees)")
             models["xgb"] = booster
         except Exception as e:
             print(f"[XGB] Training failed: {e}")
@@ -2037,7 +2038,15 @@ def run_scanner(
         else:
             subject = f"NEPSE | {regime} | No actionable picks | {date_short}"
 
-        send_email(subject, html)
+        # Throttle: max 1 morning-scan email per NPT day
+        try:
+            from src.email_throttle import allow
+            if allow("morning_scan", max_per_day=1, dedupe_key=today):
+                send_email(subject, html)
+            else:
+                print("[EMAIL] Morning scan email already sent today -- skipping duplicate")
+        except Exception:
+            send_email(subject, html)
     else:
         # Save HTML locally for review
         out_path = ROOT / "reports" / f"scanner_{today}.html"
@@ -2060,8 +2069,10 @@ def main():
     parser.add_argument("--backtest",   action="store_true",  help="Run walk-forward backtest")
     args = parser.parse_args()
 
+    # Don't email on retrain runs — the morning scan already emailed today.
+    send_email_flag = (not args.print) and (not args.train_xgb) and (not args.train_gru)
     run_scanner(
-        send_email_flag = not args.print,
+        send_email_flag = send_email_flag,
         train_xgb_flag  = args.train_xgb,
         train_gru_flag  = args.train_gru,
         run_backtest    = args.backtest,

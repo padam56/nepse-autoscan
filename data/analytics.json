@@ -1,216 +1,111 @@
 {
-  "date": "2026-03-30",
+  "date": "2026-04-22",
   "sector_rotation": [
     {
       "sector": "Mutual Fund",
-      "avg_1d": -2.07,
-      "avg_5d": -2.29,
-      "avg_20d": 5.09,
+      "avg_1d": -0.73,
+      "avg_5d": -0.6,
+      "avg_20d": -3.16,
       "n_stocks": 6,
-      "n_positive": 0,
+      "n_positive": 2,
+      "heat": "NEUTRAL"
+    },
+    {
+      "sector": "Life Ins",
+      "avg_1d": -0.18,
+      "avg_5d": -1.73,
+      "avg_20d": -8.12,
+      "n_stocks": 8,
+      "n_positive": 2,
       "heat": "COOL"
     },
     {
       "sector": "Manu",
-      "avg_1d": -3.74,
-      "avg_5d": -2.66,
-      "avg_20d": 5.25,
+      "avg_1d": -0.12,
+      "avg_5d": -1.74,
+      "avg_20d": -4.3,
       "n_stocks": 8,
-      "n_positive": 0,
+      "n_positive": 3,
       "heat": "COOL"
     },
     {
-      "sector": "Hydro",
-      "avg_1d": -3.91,
-      "avg_5d": -3.27,
-      "avg_20d": 8.21,
-      "n_stocks": 59,
-      "n_positive": 4,
-      "heat": "COLD"
-    },
-    {
-      "sector": "Hotel",
-      "avg_1d": -3.63,
-      "avg_5d": -4.75,
-      "avg_20d": 2.91,
-      "n_stocks": 4,
-      "n_positive": 0,
-      "heat": "COLD"
-    },
-    {
-      "sector": "Non-Life Ins",
-      "avg_1d": -4.08,
-      "avg_5d": -5.31,
-      "avg_20d": 5.87,
-      "n_stocks": 8,
-      "n_positive": 0,
-      "heat": "COLD"
+      "sector": "Dev Banks",
+      "avg_1d": -0.26,
+      "avg_5d": -2.28,
+      "avg_20d": -7.96,
+      "n_stocks": 17,
+      "n_positive": 8,
+      "heat": "COOL"
     },
     {
       "sector": "Banking",
-      "avg_1d": -4.93,
-      "avg_5d": -5.37,
-      "avg_20d": 10.25,
+      "avg_1d": 0.14,
+      "avg_5d": -2.47,
+      "avg_20d": -6.95,
       "n_stocks": 17,
-      "n_positive": 0,
-      "heat": "COLD"
+      "n_positive": 8,
+      "heat": "COOL"
     },
     {
-      "sector": "Life Ins",
-      "avg_1d": -3.73,
-      "avg_5d": -5.6,
-      "avg_20d": 5.08,
+      "sector": "Non-Life Ins",
+      "avg_1d": 0.09,
+      "avg_5d": -2.51,
+      "avg_20d": -9.21,
       "n_stocks": 8,
-      "n_positive": 0,
-      "heat": "COLD"
-    },
-    {
-      "sector": "Dev Banks",
-      "avg_1d": -4.32,
-      "avg_5d": -5.82,
-      "avg_20d": 5.73,
-      "n_stocks": 17,
-      "n_positive": 0,
-      "heat": "COLD"
+      "n_positive": 3,
+      "heat": "COOL"
     },
     {
       "sector": "Micro",
-      "avg_1d": -4.46,
-      "avg_5d": -6.11,
-      "avg_20d": 3.33,
+      "avg_1d": -0.52,
+      "avg_5d": -2.65,
+      "avg_20d": -10.8,
       "n_stocks": 9,
-      "n_positive": 0,
-      "heat": "COLD"
+      "n_positive": 4,
+      "heat": "COOL"
+    },
+    {
+      "sector": "Hotel",
+      "avg_1d": -0.05,
+      "avg_5d": -2.79,
+      "avg_20d": -6.1,
+      "n_stocks": 4,
+      "n_positive": 1,
+      "heat": "COOL"
     },
     {
       "sector": "Finance",
-      "avg_1d": -5.41,
-      "avg_5d": -7.42,
-      "avg_20d": 4.81,
+      "avg_1d": 0.36,
+      "avg_5d": -3.2,
+      "avg_20d": -11.12,
       "n_stocks": 13,
-      "n_positive": 0,
+      "n_positive": 7,
+      "heat": "COLD"
+    },
+    {
+      "sector": "Hydro",
+      "avg_1d": 0.03,
+      "avg_5d": -4.46,
+      "avg_20d": -3.64,
+      "n_stocks": 59,
+      "n_positive": 31,
       "heat": "COLD"
     }
   ],
   "breadth": {
-    "total_stocks": 321,
-    "pct_above_sma20": 29.9,
-    "new_20d_highs": 10,
-    "new_20d_lows": 43,
-    "rsi_mean": 43.9,
-    "rsi_median": 44.1,
+    "total_stocks": 322,
+    "pct_above_sma20": 9.0,
+    "new_20d_highs": 8,
+    "new_20d_lows": 171,
+    "rsi_mean": 39.0,
+    "rsi_median": 38.5,
     "rsi_distribution": {
       "oversold_0_30": 50,
-      "neutral_30_50": 170,
-      "neutral_50_70": 95,
-      "overbought_70_100": 6
+      "neutral_30_50": 238,
+      "neutral_50_70": 29,
+      "overbought_70_100": 5
     },
     "breadth_history": [
-      {
-        "date": "2026-02-05",
-        "gainers": 0,
-        "losers": 0,
-        "unchanged": 316,
-        "ad_ratio": 0.0
-      },
-      {
-        "date": "2026-02-08",
-        "gainers": 0,
-        "losers": 0,
-        "unchanged": 317,
-        "ad_ratio": 0.0
-      },
-      {
-        "date": "2026-02-09",
-        "gainers": 0,
-        "losers": 0,
-        "unchanged": 317,
-        "ad_ratio": 0.0
-      },
-      {
-        "date": "2026-02-10",
-        "gainers": 0,
-        "losers": 0,
-        "unchanged": 319,
-        "ad_ratio": 0.0
-      },
-      {
-        "date": "2026-02-11",
-        "gainers": 0,
-        "losers": 0,
-        "unchanged": 317,
-        "ad_ratio": 0.0
-      },
-      {
-        "date": "2026-02-12",
-        "gainers": 0,
-        "losers": 0,
-        "unchanged": 319,
-        "ad_ratio": 0.0
-      },
-      {
-        "date": "2026-02-16",
-        "gainers": 0,
-        "losers": 0,
-        "unchanged": 322,
-        "ad_ratio": 0.0
-      },
-      {
-        "date": "2026-02-17",
-        "gainers": 0,
-        "losers": 0,
-        "unchanged": 330,
-        "ad_ratio": 0.0
-      },
-      {
-        "date": "2026-02-22",
-        "gainers": 0,
-        "losers": 0,
-        "unchanged": 318,
-        "ad_ratio": 0.0
-      },
-      {
-        "date": "2026-02-23",
-        "gainers": 0,
-        "losers": 0,
-        "unchanged": 320,
-        "ad_ratio": 0.0
-      },
-      {
-        "date": "2026-02-24",
-        "gainers": 0,
-        "losers": 0,
-        "unchanged": 317,
-        "ad_ratio": 0.0
-      },
-      {
-        "date": "2026-02-25",
-        "gainers": 0,
-        "losers": 0,
-        "unchanged": 318,
-        "ad_ratio": 0.0
-      },
-      {
-        "date": "2026-02-26",
-        "gainers": 0,
-        "losers": 0,
-        "unchanged": 320,
-        "ad_ratio": 0.0
-      },
-      {
-        "date": "2026-03-01",
-        "gainers": 0,
-        "losers": 0,
-        "unchanged": 323,
-        "ad_ratio": 0.0
-      },
-      {
-        "date": "2026-03-03",
-        "gainers": 0,
-        "losers": 0,
-        "unchanged": 320,
-        "ad_ratio": 0.0
-      },
       {
         "date": "2026-03-09",
         "gainers": 0,
@@ -315,646 +210,646 @@
         "losers": 290,
         "unchanged": 7,
         "ad_ratio": 0.15
+      },
+      {
+        "date": "2026-03-31",
+        "gainers": 222,
+        "losers": 102,
+        "unchanged": 15,
+        "ad_ratio": 2.18
+      },
+      {
+        "date": "2026-04-01",
+        "gainers": 36,
+        "losers": 302,
+        "unchanged": 9,
+        "ad_ratio": 0.12
+      },
+      {
+        "date": "2026-04-06",
+        "gainers": 313,
+        "losers": 27,
+        "unchanged": 5,
+        "ad_ratio": 11.59
+      },
+      {
+        "date": "2026-04-07",
+        "gainers": 114,
+        "losers": 211,
+        "unchanged": 20,
+        "ad_ratio": 0.54
+      },
+      {
+        "date": "2026-04-08",
+        "gainers": 304,
+        "losers": 36,
+        "unchanged": 6,
+        "ad_ratio": 8.44
+      },
+      {
+        "date": "2026-04-09",
+        "gainers": 285,
+        "losers": 43,
+        "unchanged": 10,
+        "ad_ratio": 6.63
+      },
+      {
+        "date": "2026-04-12",
+        "gainers": 84,
+        "losers": 238,
+        "unchanged": 13,
+        "ad_ratio": 0.35
+      },
+      {
+        "date": "2026-04-13",
+        "gainers": 141,
+        "losers": 184,
+        "unchanged": 17,
+        "ad_ratio": 0.77
+      },
+      {
+        "date": "2026-04-14",
+        "gainers": 141,
+        "losers": 184,
+        "unchanged": 17,
+        "ad_ratio": 0.77
+      },
+      {
+        "date": "2026-04-15",
+        "gainers": 259,
+        "losers": 67,
+        "unchanged": 18,
+        "ad_ratio": 3.87
+      },
+      {
+        "date": "2026-04-16",
+        "gainers": 55,
+        "losers": 276,
+        "unchanged": 11,
+        "ad_ratio": 0.2
+      },
+      {
+        "date": "2026-04-19",
+        "gainers": 139,
+        "losers": 180,
+        "unchanged": 16,
+        "ad_ratio": 0.77
+      },
+      {
+        "date": "2026-04-20",
+        "gainers": 84,
+        "losers": 246,
+        "unchanged": 19,
+        "ad_ratio": 0.34
+      },
+      {
+        "date": "2026-04-21",
+        "gainers": 79,
+        "losers": 253,
+        "unchanged": 15,
+        "ad_ratio": 0.31
+      },
+      {
+        "date": "2026-04-22",
+        "gainers": 151,
+        "losers": 175,
+        "unchanged": 16,
+        "ad_ratio": 0.86
       }
     ]
   },
   "momentum": {
     "top_momentum": [
       {
-        "symbol": "SAPDBL",
+        "symbol": "HFIN",
         "sector": "Other",
-        "price": 1048.3,
-        "ret_5d": 14.82,
-        "ret_20d": 29.5,
-        "volatility": 3.69,
-        "sharpe_5d": 4.02,
-        "sharpe_20d": 8.0,
-        "rsi": 73.4,
-        "vol_ratio": 3.4
+        "price": 1237.0,
+        "ret_5d": 36.44,
+        "ret_20d": 526.01,
+        "volatility": 8.09,
+        "sharpe_5d": 4.51,
+        "sharpe_20d": 65.06,
+        "rsi": 87.4,
+        "vol_ratio": 6.4
       },
       {
-        "symbol": "RIDI",
+        "symbol": "HEIP",
+        "sector": "Other",
+        "price": 347.0,
+        "ret_5d": 2.06,
+        "ret_20d": 4.8,
+        "volatility": 0.89,
+        "sharpe_5d": 2.31,
+        "sharpe_20d": 5.39,
+        "rsi": 78.3,
+        "vol_ratio": 0.0
+      },
+      {
+        "symbol": "GMFBS",
+        "sector": "Other",
+        "price": 1442.0,
+        "ret_5d": 3.9,
+        "ret_20d": -4.25,
+        "volatility": 2.54,
+        "sharpe_5d": 1.54,
+        "sharpe_20d": -1.67,
+        "rsi": 53.8,
+        "vol_ratio": 1.9
+      },
+      {
+        "symbol": "NICAD2091",
+        "sector": "Other",
+        "price": 1059.0,
+        "ret_5d": 0.85,
+        "ret_20d": -2.57,
+        "volatility": 0.94,
+        "sharpe_5d": 0.9,
+        "sharpe_20d": -2.72,
+        "rsi": 42.9,
+        "vol_ratio": 2.1
+      },
+      {
+        "symbol": "EBLD91",
+        "sector": "Other",
+        "price": 1080.0,
+        "ret_5d": 0.93,
+        "ret_20d": -3.23,
+        "volatility": 1.13,
+        "sharpe_5d": 0.83,
+        "sharpe_20d": -2.87,
+        "rsi": 41.3,
+        "vol_ratio": 0.3
+      },
+      {
+        "symbol": "SIFC",
+        "sector": "Finance",
+        "price": 570.0,
+        "ret_5d": 1.1,
+        "ret_20d": -7.32,
+        "volatility": 1.75,
+        "sharpe_5d": 0.63,
+        "sharpe_20d": -4.18,
+        "rsi": 41.0,
+        "vol_ratio": 1.1
+      },
+      {
+        "symbol": "GBBD85",
+        "sector": "Other",
+        "price": 1075.7,
+        "ret_5d": 0.3,
+        "ret_20d": -2.52,
+        "volatility": 1.43,
+        "sharpe_5d": 0.21,
+        "sharpe_20d": -1.76,
+        "rsi": 52.9,
+        "vol_ratio": 1.1
+      },
+      {
+        "symbol": "ENL",
         "sector": "Hydro",
-        "price": 380.0,
-        "ret_5d": 7.04,
-        "ret_20d": 31.49,
-        "volatility": 3.17,
-        "sharpe_5d": 2.22,
-        "sharpe_20d": 9.95,
-        "rsi": 69.7,
-        "vol_ratio": 1.6
+        "price": 916.8,
+        "ret_5d": 0.25,
+        "ret_20d": -5.97,
+        "volatility": 2.09,
+        "sharpe_5d": 0.12,
+        "sharpe_20d": -2.85,
+        "rsi": 49.3,
+        "vol_ratio": 0.2
+      },
+      {
+        "symbol": "BGWT",
+        "sector": "Hydro",
+        "price": 750.0,
+        "ret_5d": 0.13,
+        "ret_20d": -3.23,
+        "volatility": 1.93,
+        "sharpe_5d": 0.07,
+        "sharpe_20d": -1.67,
+        "rsi": 49.6,
+        "vol_ratio": 0.6
+      },
+      {
+        "symbol": "SBID2090",
+        "sector": "Other",
+        "price": 1060.0,
+        "ret_5d": 0.09,
+        "ret_20d": -1.76,
+        "volatility": 1.38,
+        "sharpe_5d": 0.07,
+        "sharpe_20d": -1.27,
+        "rsi": 32.4,
+        "vol_ratio": 0.3
       },
       {
         "symbol": "CBLD88",
         "sector": "Other",
-        "price": 1220.0,
-        "ret_5d": 3.83,
-        "ret_20d": -0.25,
-        "volatility": 1.75,
-        "sharpe_5d": 2.18,
-        "sharpe_20d": -0.14,
-        "rsi": 63.5,
-        "vol_ratio": 1.0
-      },
-      {
-        "symbol": "API",
-        "sector": "Hydro",
-        "price": 357.6,
-        "ret_5d": 2.76,
-        "ret_20d": 20.08,
-        "volatility": 2.08,
-        "sharpe_5d": 1.32,
-        "sharpe_20d": 9.64,
-        "rsi": 64.6,
-        "vol_ratio": 1.2
-      },
-      {
-        "symbol": "TAMOR",
-        "sector": "Hydro",
-        "price": 458.1,
-        "ret_5d": 2.25,
-        "ret_20d": 10.92,
-        "volatility": 1.97,
-        "sharpe_5d": 1.14,
-        "sharpe_20d": 5.54,
-        "rsi": 57.0,
-        "vol_ratio": 1.0
-      },
-      {
-        "symbol": "SMJC",
-        "sector": "Other",
-        "price": 493.2,
-        "ret_5d": 1.9,
-        "ret_20d": 3.81,
-        "volatility": 1.72,
-        "sharpe_5d": 1.1,
-        "sharpe_20d": 2.21,
-        "rsi": 50.1,
-        "vol_ratio": 1.6
-      },
-      {
-        "symbol": "EBLD91",
-        "sector": "Other",
-        "price": 1126.0,
-        "ret_5d": 0.9,
-        "ret_20d": 2.36,
-        "volatility": 1.0,
-        "sharpe_5d": 0.89,
-        "sharpe_20d": 2.35,
-        "rsi": 72.0,
-        "vol_ratio": 2.8
-      },
-      {
-        "symbol": "ICFCD88",
-        "sector": "Other",
-        "price": 1168.0,
-        "ret_5d": 1.13,
-        "ret_20d": 2.37,
-        "volatility": 1.51,
-        "sharpe_5d": 0.75,
-        "sharpe_20d": 1.57,
-        "rsi": 52.4,
-        "vol_ratio": 1.0
-      },
-      {
-        "symbol": "NBLD87",
-        "sector": "Other",
-        "price": 1086.0,
-        "ret_5d": 1.01,
-        "ret_20d": 0.74,
-        "volatility": 1.41,
-        "sharpe_5d": 0.72,
-        "sharpe_20d": 0.52,
-        "rsi": 45.5,
-        "vol_ratio": 0.6
-      },
-      {
-        "symbol": "SGHC",
-        "sector": "Other",
-        "price": 427.0,
-        "ret_5d": 0.47,
-        "ret_20d": 13.2,
-        "volatility": 3.34,
-        "sharpe_5d": 0.14,
-        "sharpe_20d": 3.95,
-        "rsi": 44.1,
-        "vol_ratio": 0.7
-      },
-      {
-        "symbol": "HIMSTAR",
-        "sector": "Other",
-        "price": 961.0,
-        "ret_5d": 0.31,
-        "ret_20d": 0.22,
-        "volatility": 3.98,
-        "sharpe_5d": 0.08,
-        "sharpe_20d": 0.06,
-        "rsi": 29.1,
-        "vol_ratio": 0.7
-      },
-      {
-        "symbol": "UNHPL",
-        "sector": "Hydro",
-        "price": 538.8,
-        "ret_5d": 0.15,
-        "ret_20d": 12.25,
-        "volatility": 2.4,
-        "sharpe_5d": 0.06,
-        "sharpe_20d": 5.11,
-        "rsi": 55.5,
-        "vol_ratio": 0.8
-      },
-      {
-        "symbol": "EBLD85",
-        "sector": "Other",
-        "price": 1170.0,
+        "price": 1280.0,
         "ret_5d": 0.0,
-        "ret_20d": -0.85,
-        "volatility": 1.47,
+        "ret_20d": 7.38,
+        "volatility": 2.03,
         "sharpe_5d": 0.0,
-        "sharpe_20d": -0.57,
-        "rsi": 53.9,
-        "vol_ratio": 0.5
+        "sharpe_20d": 3.63,
+        "rsi": 62.0,
+        "vol_ratio": 0.3
       },
-      {
-        "symbol": "HURJA",
-        "sector": "Hydro",
-        "price": 294.5,
-        "ret_5d": -0.14,
-        "ret_20d": 18.85,
-        "volatility": 2.19,
-        "sharpe_5d": -0.06,
-        "sharpe_20d": 8.59,
-        "rsi": 60.2,
-        "vol_ratio": 2.5
-      },
-      {
-        "symbol": "SPL",
-        "sector": "Other",
-        "price": 752.0,
-        "ret_5d": -0.53,
-        "ret_20d": 5.09,
-        "volatility": 3.33,
-        "sharpe_5d": -0.16,
-        "sharpe_20d": 1.53,
-        "rsi": 43.4,
-        "vol_ratio": 0.8
-      },
-      {
-        "symbol": "SANVI",
-        "sector": "Other",
-        "price": 815.0,
-        "ret_5d": -0.49,
-        "ret_20d": 4.62,
-        "volatility": 2.71,
-        "sharpe_5d": -0.18,
-        "sharpe_20d": 1.71,
-        "rsi": 29.6,
-        "vol_ratio": 0.5
-      },
-      {
-        "symbol": "DHEL",
-        "sector": "Hydro",
-        "price": 694.0,
-        "ret_5d": -1.14,
-        "ret_20d": 2.06,
-        "volatility": 4.26,
-        "sharpe_5d": -0.27,
-        "sharpe_20d": 0.48,
-        "rsi": 33.5,
-        "vol_ratio": 0.8
-      },
-      {
-        "symbol": "FOWAD",
-        "sector": "Hydro",
-        "price": 1138.9,
-        "ret_5d": -0.53,
-        "ret_20d": 8.99,
-        "volatility": 1.8,
-        "sharpe_5d": -0.3,
-        "sharpe_20d": 4.99,
-        "rsi": 52.7,
-        "vol_ratio": 5.9
-      },
-      {
-        "symbol": "BHCL",
-        "sector": "Other",
-        "price": 584.6,
-        "ret_5d": -0.92,
-        "ret_20d": 3.49,
-        "volatility": 2.74,
-        "sharpe_5d": -0.33,
-        "sharpe_20d": 1.27,
-        "rsi": 29.1,
-        "vol_ratio": 0.7
-      },
-      {
-        "symbol": "SAIL",
-        "sector": "Other",
-        "price": 1300.0,
-        "ret_5d": -1.14,
-        "ret_20d": -1.2,
-        "volatility": 3.36,
-        "sharpe_5d": -0.34,
-        "sharpe_20d": -0.36,
-        "rsi": 28.2,
-        "vol_ratio": 1.0
-      }
-    ],
-    "worst_momentum": [
       {
         "symbol": "HPPL",
         "sector": "Hydro",
-        "price": 387.0,
-        "ret_5d": -25.86,
-        "ret_20d": -15.85,
-        "volatility": 5.46,
-        "sharpe_5d": -4.74,
-        "sharpe_20d": -2.91,
-        "rsi": 18.3,
-        "vol_ratio": 0.6
+        "price": 409.9,
+        "ret_5d": 0.0,
+        "ret_20d": -21.48,
+        "volatility": 4.79,
+        "sharpe_5d": 0.0,
+        "sharpe_20d": -4.49,
+        "rsi": 58.0,
+        "vol_ratio": 0.5
       },
       {
-        "symbol": "NIL",
-        "sector": "Non-Life Ins",
-        "price": 644.0,
-        "ret_5d": -5.43,
-        "ret_20d": 7.33,
-        "volatility": 1.35,
-        "sharpe_5d": -4.03,
-        "sharpe_20d": 5.44,
-        "rsi": 54.8,
-        "vol_ratio": 0.9
-      },
-      {
-        "symbol": "PRIN",
-        "sector": "Non-Life Ins",
-        "price": 730.3,
-        "ret_5d": -6.37,
-        "ret_20d": 2.44,
-        "volatility": 1.59,
-        "sharpe_5d": -4.01,
-        "sharpe_20d": 1.54,
-        "rsi": 36.6,
+        "symbol": "HHL",
+        "sector": "Other",
+        "price": 395.0,
+        "ret_5d": -0.25,
+        "ret_20d": 4.19,
+        "volatility": 3.02,
+        "sharpe_5d": -0.08,
+        "sharpe_20d": 1.39,
+        "rsi": 66.3,
         "vol_ratio": 1.0
       },
       {
-        "symbol": "NLG",
-        "sector": "Other",
-        "price": 670.4,
-        "ret_5d": -6.11,
-        "ret_20d": 1.27,
-        "volatility": 1.57,
-        "sharpe_5d": -3.9,
-        "sharpe_20d": 0.81,
-        "rsi": 34.1,
-        "vol_ratio": 2.0
-      },
-      {
-        "symbol": "NMB",
+        "symbol": "SBI",
         "sector": "Banking",
-        "price": 248.6,
-        "ret_5d": -7.58,
-        "ret_20d": 6.7,
-        "volatility": 1.96,
-        "sharpe_5d": -3.86,
-        "sharpe_20d": 3.41,
-        "rsi": 51.8,
-        "vol_ratio": 1.2
-      },
-      {
-        "symbol": "GILB",
-        "sector": "Micro",
-        "price": 1169.9,
-        "ret_5d": -7.59,
-        "ret_20d": 6.26,
-        "volatility": 1.97,
-        "sharpe_5d": -3.85,
-        "sharpe_20d": 3.17,
-        "rsi": 49.5,
-        "vol_ratio": 0.7
-      },
-      {
-        "symbol": "SARBTM",
-        "sector": "Other",
-        "price": 872.0,
-        "ret_5d": -5.42,
-        "ret_20d": 0.88,
-        "volatility": 1.44,
-        "sharpe_5d": -3.78,
-        "sharpe_20d": 0.61,
-        "rsi": 28.4,
-        "vol_ratio": 0.9
+        "price": 407.8,
+        "ret_5d": -0.29,
+        "ret_20d": -4.92,
+        "volatility": 1.32,
+        "sharpe_5d": -0.22,
+        "sharpe_20d": -3.72,
+        "rsi": 37.3,
+        "vol_ratio": 1.0
       },
       {
         "symbol": "HLBSL",
         "sector": "Micro",
-        "price": 930.0,
-        "ret_5d": -5.78,
-        "ret_20d": 2.88,
-        "volatility": 1.53,
-        "sharpe_5d": -3.78,
-        "sharpe_20d": 1.88,
-        "rsi": 44.1,
-        "vol_ratio": 1.3
+        "price": 910.0,
+        "ret_5d": -0.44,
+        "ret_20d": -7.8,
+        "volatility": 1.55,
+        "sharpe_5d": -0.28,
+        "sharpe_20d": -5.04,
+        "rsi": 38.1,
+        "vol_ratio": 1.1
       },
       {
-        "symbol": "MEHL",
+        "symbol": "PURE",
         "sector": "Other",
-        "price": 447.0,
-        "ret_5d": -13.87,
-        "ret_20d": 2.08,
-        "volatility": 3.7,
-        "sharpe_5d": -3.75,
-        "sharpe_20d": 0.56,
-        "rsi": 40.7,
+        "price": 916.0,
+        "ret_5d": -0.76,
+        "ret_20d": -8.4,
+        "volatility": 2.64,
+        "sharpe_5d": -0.29,
+        "sharpe_20d": -3.19,
+        "rsi": 37.7,
+        "vol_ratio": 0.8
+      },
+      {
+        "symbol": "GBBL",
+        "sector": "Other",
+        "price": 411.5,
+        "ret_5d": -0.36,
+        "ret_20d": -5.62,
+        "volatility": 1.22,
+        "sharpe_5d": -0.3,
+        "sharpe_20d": -4.6,
+        "rsi": 40.2,
         "vol_ratio": 0.5
       },
       {
-        "symbol": "MERO",
+        "symbol": "RBBD2088",
         "sector": "Other",
-        "price": 758.2,
-        "ret_5d": -11.84,
-        "ret_20d": 6.19,
-        "volatility": 3.19,
-        "sharpe_5d": -3.71,
-        "sharpe_20d": 1.94,
-        "rsi": 48.9,
-        "vol_ratio": 1.0
+        "price": 1057.0,
+        "ret_5d": -0.28,
+        "ret_20d": 0.09,
+        "volatility": 0.94,
+        "sharpe_5d": -0.3,
+        "sharpe_20d": 0.1,
+        "rsi": 45.3,
+        "vol_ratio": 0.6
       },
       {
-        "symbol": "SONA",
+        "symbol": "NYADI",
         "sector": "Other",
-        "price": 452.0,
-        "ret_5d": -10.03,
-        "ret_20d": 8.63,
-        "volatility": 2.74,
-        "sharpe_5d": -3.66,
-        "sharpe_20d": 3.15,
-        "rsi": 45.1,
+        "price": 409.0,
+        "ret_5d": -0.73,
+        "ret_20d": -9.71,
+        "volatility": 1.87,
+        "sharpe_5d": -0.39,
+        "sharpe_20d": -5.19,
+        "rsi": 34.9,
+        "vol_ratio": 0.5
+      },
+      {
+        "symbol": "PBD88",
+        "sector": "Other",
+        "price": 1252.0,
+        "ret_5d": -0.63,
+        "ret_20d": 6.0,
+        "volatility": 1.55,
+        "sharpe_5d": -0.41,
+        "sharpe_20d": 3.87,
+        "rsi": 56.2,
+        "vol_ratio": 0.9
+      }
+    ],
+    "worst_momentum": [
+      {
+        "symbol": "DOLTI",
+        "sector": "Hydro",
+        "price": 396.0,
+        "ret_5d": -17.5,
+        "ret_20d": -22.81,
+        "volatility": 2.75,
+        "sharpe_5d": -6.36,
+        "sharpe_20d": -8.3,
+        "rsi": 19.5,
+        "vol_ratio": 5.6
+      },
+      {
+        "symbol": "BEDC",
+        "sector": "Hydro",
+        "price": 399.9,
+        "ret_5d": -15.81,
+        "ret_20d": -25.11,
+        "volatility": 2.93,
+        "sharpe_5d": -5.39,
+        "sharpe_20d": -8.56,
+        "rsi": 19.2,
         "vol_ratio": 1.2
       },
       {
-        "symbol": "TPC",
-        "sector": "Hydro",
-        "price": 389.9,
-        "ret_5d": -6.95,
-        "ret_20d": 3.97,
-        "volatility": 1.92,
-        "sharpe_5d": -3.62,
-        "sharpe_20d": 2.07,
-        "rsi": 37.4,
+        "symbol": "RSDC",
+        "sector": "Micro",
+        "price": 675.0,
+        "ret_5d": -5.33,
+        "ret_20d": -9.7,
+        "volatility": 1.3,
+        "sharpe_5d": -4.1,
+        "sharpe_20d": -7.46,
+        "rsi": 28.6,
+        "vol_ratio": 0.3
+      },
+      {
+        "symbol": "MSHL",
+        "sector": "Other",
+        "price": 741.3,
+        "ret_5d": -4.72,
+        "ret_20d": -7.92,
+        "volatility": 1.23,
+        "sharpe_5d": -3.85,
+        "sharpe_20d": -6.46,
+        "rsi": 32.7,
+        "vol_ratio": 0.6
+      },
+      {
+        "symbol": "EBLD85",
+        "sector": "Other",
+        "price": 1140.0,
+        "ret_5d": -5.0,
+        "ret_20d": -2.56,
+        "volatility": 1.31,
+        "sharpe_5d": -3.82,
+        "sharpe_20d": -1.96,
+        "rsi": 39.2,
+        "vol_ratio": 0.4
+      },
+      {
+        "symbol": "NMFBS",
+        "sector": "Micro",
+        "price": 1100.0,
+        "ret_5d": -3.93,
+        "ret_20d": -9.91,
+        "volatility": 1.03,
+        "sharpe_5d": -3.8,
+        "sharpe_20d": -9.58,
+        "rsi": 18.3,
+        "vol_ratio": 1.5
+      },
+      {
+        "symbol": "CITY",
+        "sector": "Other",
+        "price": 455.6,
+        "ret_5d": -7.45,
+        "ret_20d": -10.86,
+        "volatility": 1.98,
+        "sharpe_5d": -3.76,
+        "sharpe_20d": -5.47,
+        "rsi": 32.1,
         "vol_ratio": 0.9
+      },
+      {
+        "symbol": "NGPL",
+        "sector": "Hydro",
+        "price": 450.0,
+        "ret_5d": -4.98,
+        "ret_20d": -7.98,
+        "volatility": 1.35,
+        "sharpe_5d": -3.7,
+        "sharpe_20d": -5.92,
+        "rsi": 35.0,
+        "vol_ratio": 0.7
+      },
+      {
+        "symbol": "UMHL",
+        "sector": "Hydro",
+        "price": 594.9,
+        "ret_5d": -7.45,
+        "ret_20d": -6.46,
+        "volatility": 2.02,
+        "sharpe_5d": -3.69,
+        "sharpe_20d": -3.2,
+        "rsi": 40.4,
+        "vol_ratio": 0.6
+      },
+      {
+        "symbol": "MKHL",
+        "sector": "Other",
+        "price": 661.1,
+        "ret_5d": -8.43,
+        "ret_20d": -18.28,
+        "volatility": 2.37,
+        "sharpe_5d": -3.56,
+        "sharpe_20d": -7.71,
+        "rsi": 26.5,
+        "vol_ratio": 0.7
+      },
+      {
+        "symbol": "GMLI",
+        "sector": "Other",
+        "price": 1440.0,
+        "ret_5d": -7.07,
+        "ret_20d": -18.64,
+        "volatility": 2.03,
+        "sharpe_5d": -3.49,
+        "sharpe_20d": -9.2,
+        "rsi": 13.9,
+        "vol_ratio": 2.1
+      },
+      {
+        "symbol": "DORDI",
+        "sector": "Hydro",
+        "price": 277.0,
+        "ret_5d": -7.36,
+        "ret_20d": -11.5,
+        "volatility": 2.13,
+        "sharpe_5d": -3.45,
+        "sharpe_20d": -5.4,
+        "rsi": 36.5,
+        "vol_ratio": 1.2
+      },
+      {
+        "symbol": "MFIL",
+        "sector": "Dev Banks",
+        "price": 794.0,
+        "ret_5d": -6.81,
+        "ret_20d": -9.67,
+        "volatility": 2.0,
+        "sharpe_5d": -3.4,
+        "sharpe_20d": -4.84,
+        "rsi": 40.9,
+        "vol_ratio": 0.4
+      },
+      {
+        "symbol": "NIL",
+        "sector": "Non-Life Ins",
+        "price": 615.0,
+        "ret_5d": -3.91,
+        "ret_20d": -9.69,
+        "volatility": 1.16,
+        "sharpe_5d": -3.36,
+        "sharpe_20d": -8.33,
+        "rsi": 25.3,
+        "vol_ratio": 0.4
       },
       {
         "symbol": "EHPL",
         "sector": "Hydro",
-        "price": 417.0,
-        "ret_5d": -7.23,
-        "ret_20d": 2.96,
-        "volatility": 2.01,
-        "sharpe_5d": -3.61,
-        "sharpe_20d": 1.48,
-        "rsi": 38.3,
-        "vol_ratio": 0.8
+        "price": 398.0,
+        "ret_5d": -6.13,
+        "ret_20d": -11.46,
+        "volatility": 1.86,
+        "sharpe_5d": -3.31,
+        "sharpe_20d": -6.18,
+        "rsi": 26.4,
+        "vol_ratio": 2.0
       },
       {
-        "symbol": "ICFC",
-        "sector": "Finance",
-        "price": 646.9,
-        "ret_5d": -6.23,
-        "ret_20d": 2.58,
-        "volatility": 1.77,
-        "sharpe_5d": -3.51,
-        "sharpe_20d": 1.46,
-        "rsi": 29.6,
-        "vol_ratio": 1.2
+        "symbol": "MHL",
+        "sector": "Hydro",
+        "price": 510.0,
+        "ret_5d": -4.67,
+        "ret_20d": -7.05,
+        "volatility": 1.42,
+        "sharpe_5d": -3.3,
+        "sharpe_20d": -4.98,
+        "rsi": 35.9,
+        "vol_ratio": 0.7
       },
       {
-        "symbol": "BFC",
+        "symbol": "MCHL",
         "sector": "Other",
-        "price": 473.0,
-        "ret_5d": -8.14,
-        "ret_20d": 3.5,
-        "volatility": 2.32,
-        "sharpe_5d": -3.51,
-        "sharpe_20d": 1.51,
-        "rsi": 39.8,
+        "price": 370.0,
+        "ret_5d": -9.09,
+        "ret_20d": -11.9,
+        "volatility": 2.76,
+        "sharpe_5d": -3.29,
+        "sharpe_20d": -4.31,
+        "rsi": 32.7,
         "vol_ratio": 1.1
       },
       {
-        "symbol": "TRH",
-        "sector": "Hotel",
-        "price": 766.2,
-        "ret_5d": -3.92,
-        "ret_20d": 3.54,
-        "volatility": 1.12,
-        "sharpe_5d": -3.5,
-        "sharpe_20d": 3.15,
-        "rsi": 48.2,
-        "vol_ratio": 1.3
+        "symbol": "HURJA",
+        "sector": "Hydro",
+        "price": 271.0,
+        "ret_5d": -6.84,
+        "ret_20d": -8.1,
+        "volatility": 2.13,
+        "sharpe_5d": -3.22,
+        "sharpe_20d": -3.81,
+        "rsi": 33.3,
+        "vol_ratio": 0.5
       },
       {
-        "symbol": "PFL",
-        "sector": "Finance",
-        "price": 395.2,
-        "ret_5d": -9.15,
-        "ret_20d": 6.52,
-        "volatility": 2.64,
-        "sharpe_5d": -3.47,
-        "sharpe_20d": 2.47,
-        "rsi": 46.1,
-        "vol_ratio": 0.9
-      },
-      {
-        "symbol": "USHEC",
+        "symbol": "MEL",
         "sector": "Other",
-        "price": 491.0,
-        "ret_5d": -6.48,
-        "ret_20d": 5.82,
-        "volatility": 1.87,
-        "sharpe_5d": -3.45,
-        "sharpe_20d": 3.1,
-        "rsi": 50.4,
-        "vol_ratio": 0.8
+        "price": 267.8,
+        "ret_5d": -3.81,
+        "ret_20d": -11.91,
+        "volatility": 1.21,
+        "sharpe_5d": -3.15,
+        "sharpe_20d": -9.85,
+        "rsi": 15.8,
+        "vol_ratio": 1.0
       },
       {
-        "symbol": "MNBBL",
-        "sector": "Dev Banks",
-        "price": 379.8,
-        "ret_5d": -6.34,
-        "ret_20d": 6.15,
-        "volatility": 1.86,
-        "sharpe_5d": -3.41,
-        "sharpe_20d": 3.31,
-        "rsi": 45.8,
-        "vol_ratio": 1.2
-      },
-      {
-        "symbol": "SNLI",
-        "sector": "Life Ins",
-        "price": 467.3,
-        "ret_5d": -6.91,
-        "ret_20d": 5.25,
-        "volatility": 2.04,
-        "sharpe_5d": -3.39,
-        "sharpe_20d": 2.57,
-        "rsi": 34.9,
-        "vol_ratio": 0.9
+        "symbol": "FOWAD",
+        "sector": "Hydro",
+        "price": 1135.0,
+        "ret_5d": -4.06,
+        "ret_20d": -0.87,
+        "volatility": 1.3,
+        "sharpe_5d": -3.12,
+        "sharpe_20d": -0.67,
+        "rsi": 46.0,
+        "vol_ratio": 0.5
       }
     ],
     "oversold_bounces": [
       {
-        "symbol": "HIMSTAR",
+        "symbol": "SBID2090",
         "sector": "Other",
-        "price": 961.0,
-        "ret_5d": 0.31,
-        "ret_20d": 0.22,
-        "volatility": 3.98,
-        "sharpe_5d": 0.08,
-        "sharpe_20d": 0.06,
-        "rsi": 29.1,
-        "vol_ratio": 0.7
+        "price": 1060.0,
+        "ret_5d": 0.09,
+        "ret_20d": -1.76,
+        "volatility": 1.38,
+        "sharpe_5d": 0.07,
+        "sharpe_20d": -1.27,
+        "rsi": 32.4,
+        "vol_ratio": 0.3
       }
     ],
     "volume_breakouts": [
       {
-        "symbol": "SAPDBL",
+        "symbol": "HFIN",
         "sector": "Other",
-        "price": 1048.3,
-        "ret_5d": 14.82,
-        "ret_20d": 29.5,
-        "volatility": 3.69,
-        "sharpe_5d": 4.02,
-        "sharpe_20d": 8.0,
-        "rsi": 73.4,
-        "vol_ratio": 3.4
+        "price": 1237.0,
+        "ret_5d": 36.44,
+        "ret_20d": 526.01,
+        "volatility": 8.09,
+        "sharpe_5d": 4.51,
+        "sharpe_20d": 65.06,
+        "rsi": 87.4,
+        "vol_ratio": 6.4
       },
       {
-        "symbol": "EBLD91",
+        "symbol": "NICAD2091",
         "sector": "Other",
-        "price": 1126.0,
-        "ret_5d": 0.9,
-        "ret_20d": 2.36,
-        "volatility": 1.0,
-        "sharpe_5d": 0.89,
-        "sharpe_20d": 2.35,
-        "rsi": 72.0,
-        "vol_ratio": 2.8
+        "price": 1059.0,
+        "ret_5d": 0.85,
+        "ret_20d": -2.57,
+        "volatility": 0.94,
+        "sharpe_5d": 0.9,
+        "sharpe_20d": -2.72,
+        "rsi": 42.9,
+        "vol_ratio": 2.1
       }
     ]
   },
   "volatility": {
     "regime": "NORMAL",
-    "recent_vol": 1.389,
-    "historical_vol": 1.172,
-    "vol_ratio": 1.18,
+    "recent_vol": 0.707,
+    "historical_vol": 1.226,
+    "vol_ratio": 0.58,
     "daily_stats": [
-      {
-        "date": "2026-02-05",
-        "mean_ret": 1.128,
-        "median_ret": 0.877,
-        "std_ret": 2.205,
-        "pct_positive": 75.2
-      },
-      {
-        "date": "2026-02-08",
-        "mean_ret": -0.387,
-        "median_ret": -0.427,
-        "std_ret": 1.93,
-        "pct_positive": 33.7
-      },
-      {
-        "date": "2026-02-09",
-        "mean_ret": -0.971,
-        "median_ret": -0.946,
-        "std_ret": 1.784,
-        "pct_positive": 18.8
-      },
-      {
-        "date": "2026-02-10",
-        "mean_ret": -0.35,
-        "median_ret": -0.402,
-        "std_ret": 1.39,
-        "pct_positive": 32.9
-      },
-      {
-        "date": "2026-02-11",
-        "mean_ret": -0.117,
-        "median_ret": -0.05,
-        "std_ret": 1.771,
-        "pct_positive": 42.9
-      },
-      {
-        "date": "2026-02-12",
-        "mean_ret": 0.283,
-        "median_ret": 0.057,
-        "std_ret": 1.775,
-        "pct_positive": 52.2
-      },
-      {
-        "date": "2026-02-16",
-        "mean_ret": -0.502,
-        "median_ret": -0.326,
-        "std_ret": 2.523,
-        "pct_positive": 34.6
-      },
-      {
-        "date": "2026-02-17",
-        "mean_ret": -0.798,
-        "median_ret": -0.874,
-        "std_ret": 2.009,
-        "pct_positive": 22.5
-      },
-      {
-        "date": "2026-02-22",
-        "mean_ret": -1.142,
-        "median_ret": -0.947,
-        "std_ret": 2.005,
-        "pct_positive": 16.8
-      },
-      {
-        "date": "2026-02-23",
-        "mean_ret": -0.003,
-        "median_ret": -0.035,
-        "std_ret": 1.575,
-        "pct_positive": 43.8
-      },
-      {
-        "date": "2026-02-24",
-        "mean_ret": 0.979,
-        "median_ret": 0.688,
-        "std_ret": 1.744,
-        "pct_positive": 77.1
-      },
-      {
-        "date": "2026-02-25",
-        "mean_ret": 0.364,
-        "median_ret": 0.25,
-        "std_ret": 1.61,
-        "pct_positive": 58.8
-      },
-      {
-        "date": "2026-02-26",
-        "mean_ret": 0.112,
-        "median_ret": 0.0,
-        "std_ret": 1.386,
-        "pct_positive": 49.8
-      },
-      {
-        "date": "2026-03-01",
-        "mean_ret": 0.496,
-        "median_ret": 0.425,
-        "std_ret": 1.508,
-        "pct_positive": 65.8
-      },
-      {
-        "date": "2026-03-03",
-        "mean_ret": 1.668,
-        "median_ret": 1.577,
-        "std_ret": 1.521,
-        "pct_positive": 91.7
-      },
       {
         "date": "2026-03-09",
         "mean_ret": 5.711,
@@ -1059,6 +954,111 @@
         "median_ret": -3.786,
         "std_ret": 3.579,
         "pct_positive": 6.1
+      },
+      {
+        "date": "2026-03-31",
+        "mean_ret": 0.605,
+        "median_ret": 0.56,
+        "std_ret": 1.869,
+        "pct_positive": 67.1
+      },
+      {
+        "date": "2026-04-01",
+        "mean_ret": -2.172,
+        "median_ret": -2.308,
+        "std_ret": 2.418,
+        "pct_positive": 8.5
+      },
+      {
+        "date": "2026-04-06",
+        "mean_ret": -0.46,
+        "median_ret": -0.881,
+        "std_ret": 5.009,
+        "pct_positive": 27.0
+      },
+      {
+        "date": "2026-04-07",
+        "mean_ret": -0.161,
+        "median_ret": -0.423,
+        "std_ret": 1.965,
+        "pct_positive": 32.8
+      },
+      {
+        "date": "2026-04-08",
+        "mean_ret": 1.763,
+        "median_ret": 1.42,
+        "std_ret": 2.097,
+        "pct_positive": 89.6
+      },
+      {
+        "date": "2026-04-09",
+        "mean_ret": 1.405,
+        "median_ret": 1.191,
+        "std_ret": 2.085,
+        "pct_positive": 85.9
+      },
+      {
+        "date": "2026-04-12",
+        "mean_ret": -0.447,
+        "median_ret": -0.774,
+        "std_ret": 1.974,
+        "pct_positive": 24.1
+      },
+      {
+        "date": "2026-04-13",
+        "mean_ret": 0.192,
+        "median_ret": -0.138,
+        "std_ret": 2.026,
+        "pct_positive": 40.4
+      },
+      {
+        "date": "2026-04-14",
+        "mean_ret": 0.0,
+        "median_ret": 0.0,
+        "std_ret": 0.0,
+        "pct_positive": 0.0
+      },
+      {
+        "date": "2026-04-15",
+        "mean_ret": 1.048,
+        "median_ret": 0.828,
+        "std_ret": 1.909,
+        "pct_positive": 76.5
+      },
+      {
+        "date": "2026-04-16",
+        "mean_ret": -1.135,
+        "median_ret": -1.163,
+        "std_ret": 2.037,
+        "pct_positive": 15.9
+      },
+      {
+        "date": "2026-04-19",
+        "mean_ret": 0.039,
+        "median_ret": -0.101,
+        "std_ret": 1.783,
+        "pct_positive": 41.5
+      },
+      {
+        "date": "2026-04-20",
+        "mean_ret": -0.341,
+        "median_ret": -0.646,
+        "std_ret": 2.399,
+        "pct_positive": 24.8
+      },
+      {
+        "date": "2026-04-21",
+        "mean_ret": -0.54,
+        "median_ret": -0.653,
+        "std_ret": 2.292,
+        "pct_positive": 21.9
+      },
+      {
+        "date": "2026-04-22",
+        "mean_ret": -0.02,
+        "median_ret": -0.057,
+        "std_ret": 2.304,
+        "pct_positive": 43.9
       }
     ]
   },
@@ -1077,101 +1077,101 @@
     "matrix": [
       [
         1.0,
-        0.97,
+        0.94,
         0.96,
-        0.9,
         0.93,
-        0.92,
-        0.92,
-        0.86,
-        0.92
-      ],
-      [
-        0.97,
-        1.0,
-        0.95,
         0.91,
-        0.91,
-        0.91,
+        0.96,
         0.93,
-        0.87,
+        0.91,
         0.91
       ],
       [
-        0.96,
-        0.95,
+        0.94,
         1.0,
-        0.92,
         0.91,
-        0.92,
-        0.92,
-        0.93,
-        0.92
-      ],
-      [
         0.9,
+        0.84,
         0.91,
-        0.92,
-        1.0,
-        0.79,
-        0.92,
-        0.85,
         0.93,
-        0.96
+        0.85,
+        0.86
+      ],
+      [
+        0.96,
+        0.91,
+        1.0,
+        0.92,
+        0.94,
+        0.97,
+        0.88,
+        0.92,
+        0.94
       ],
       [
         0.93,
-        0.91,
-        0.91,
-        0.79,
+        0.9,
+        0.92,
         1.0,
         0.86,
-        0.91,
+        0.9,
+        0.87,
         0.79,
-        0.83
+        0.79
       ],
       [
-        0.92,
         0.91,
-        0.92,
-        0.92,
+        0.84,
+        0.94,
         0.86,
         1.0,
         0.87,
+        0.89,
         0.85,
         0.9
       ],
       [
-        0.92,
-        0.93,
-        0.92,
-        0.85,
+        0.96,
         0.91,
+        0.97,
+        0.9,
         0.87,
         1.0,
-        0.82,
+        0.87,
+        0.94,
+        0.9
+      ],
+      [
+        0.93,
+        0.93,
+        0.88,
+        0.87,
+        0.89,
+        0.87,
+        1.0,
+        0.8,
         0.85
       ],
       [
-        0.86,
-        0.87,
-        0.93,
-        0.93,
+        0.91,
+        0.85,
+        0.92,
         0.79,
         0.85,
-        0.82,
+        0.94,
+        0.8,
         1.0,
-        0.94
+        0.9
       ],
       [
-        0.92,
         0.91,
-        0.92,
-        0.96,
-        0.83,
+        0.86,
+        0.94,
+        0.79,
+        0.9,
         0.9,
         0.85,
-        0.94,
+        0.9,
         1.0
       ]
     ]

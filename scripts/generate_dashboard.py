@@ -14,7 +14,8 @@ Output: docs/index.html
 """
 import json
 import sys
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+NPT = timezone(timedelta(hours=5, minutes=45))
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -1022,7 +1023,7 @@ try {{ new Chart(document.getElementById('{chart_id}'),{{
     eq_values = json.dumps([round(p.get("equity", initial)) for p in equity_curve[-30:]])
     eq_len = len(equity_curve[-30:]) if equity_curve else 1
 
-    now = datetime.now().strftime("%H:%M:%S")
+    now = datetime.now(NPT).strftime("%H:%M:%S")
     avg_cls = "text-tertiary" if avg_change >= 0 else "text-error"
     avg_icon = "trending_up" if avg_change >= 0 else "trending_down"
     ret_cls = "text-tertiary" if total_return >= 0 else "text-error"

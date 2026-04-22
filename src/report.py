@@ -4,7 +4,8 @@ Report Generator - Produces comprehensive analysis reports for NEPSE stocks.
 
 import json
 import os
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+NPT = timezone(timedelta(hours=5, minutes=45))
 
 from tabulate import tabulate
 
@@ -17,7 +18,7 @@ class ReportGenerator:
     def __init__(self, symbol: str):
         self.symbol = symbol.upper()
         os.makedirs(REPORTS_DIR, exist_ok=True)
-        self.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+        self.timestamp = datetime.now(NPT).strftime("%Y-%m-%d %H:%M")
         self.lines = []
 
     def _h(self, title: str, char: str = "="):
@@ -226,7 +227,7 @@ class ReportGenerator:
 
     def save(self) -> str:
         report = self.build()
-        filename = f"{self.symbol}_analysis_{datetime.now().strftime('%Y%m%d_%H%M')}.txt"
+        filename = f"{self.symbol}_analysis_{datetime.now(NPT).strftime('%Y%m%d_%H%M')}.txt"
         path = os.path.join(REPORTS_DIR, filename)
         with open(path, "w") as f:
             f.write(report)

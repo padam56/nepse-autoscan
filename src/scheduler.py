@@ -14,7 +14,8 @@ import json
 import time
 import signal
 import threading
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+NPT = timezone(timedelta(hours=5, minutes=45))
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -57,7 +58,7 @@ class DailyScheduler:
     def run_daily_analysis(self, symbol: str = "ALICL") -> dict:
         """Run full analysis pipeline and send alerts. Called by cron or daemon."""
         print(f"\n{'='*60}")
-        print(f"  DAILY ANALYSIS RUN - {symbol} - {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+        print(f"  DAILY ANALYSIS RUN - {symbol} - {datetime.now(NPT).strftime('%Y-%m-%d %H:%M')}")
         print(f"{'='*60}\n")
 
         results = {}
@@ -124,7 +125,7 @@ class DailyScheduler:
         self._check_price_alerts(symbol, current_price)
 
         # Save run summary
-        results["timestamp"] = datetime.now().isoformat()
+        results["timestamp"] = datetime.now(NPT).isoformat()
         self._save_run(results)
 
         print(f"\n[+] Daily analysis complete for {symbol}")

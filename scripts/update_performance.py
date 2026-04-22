@@ -10,7 +10,8 @@ import json
 import os
 import subprocess
 import sys
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+NPT = timezone(timedelta(hours=5, minutes=45))
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -70,8 +71,8 @@ def generate_performance_md(state, trades):
     trend = "up" if total_return >= 0 else "down"
     trend_arrow = "+" if total_return >= 0 else ""
 
-    now = datetime.now().strftime("%Y-%m-%d %H:%M NPT")
-    today = datetime.now().strftime("%Y-%m-%d")
+    now = datetime.now(NPT).strftime("%Y-%m-%d %H:%M NPT")
+    today = datetime.now(NPT).strftime("%Y-%m-%d")
 
     # Equity curve sparkline (last 20 points as text bars)
     sparkline = ""
@@ -200,7 +201,7 @@ def git_commit_and_push():
                 print("[PERF] No changes to push")
                 return False
 
-        today = datetime.now().strftime("%Y-%m-%d")
+        today = datetime.now(NPT).strftime("%Y-%m-%d")
         subprocess.run(['git', 'add', 'PERFORMANCE.md', 'docs/'], check=True,
                         capture_output=True)
 

@@ -14,7 +14,8 @@ import smtplib
 import os
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+NPT = timezone(timedelta(hours=5, minutes=45))
 
 
 class EnhancedAlert:
@@ -78,7 +79,7 @@ class EnhancedAlert:
         breadth = macro["breadth"]
         insurance = macro["insurance_sector"]
         tech = d["tech_detail"]
-        date_str = datetime.now().strftime("%Y-%m-%d %I:%M %p")
+        date_str = datetime.now(NPT).strftime("%Y-%m-%d %I:%M %p")
 
         # Build sell levels table rows
         sell_rows = ""

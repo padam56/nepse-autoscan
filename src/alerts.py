@@ -8,7 +8,9 @@ import smtplib
 import os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
+
+NPT = timezone(timedelta(hours=5, minutes=45))
 
 
 class AlertSystem:
@@ -59,7 +61,7 @@ class AlertSystem:
         """Send a comprehensive trading signal alert."""
         action = signals.get("action", "HOLD")
         score = signals.get("composite_score", 0)
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+        timestamp = datetime.now(NPT).strftime("%Y-%m-%d %H:%M")
 
         # Determine urgency
         if "STRONG" in action:
@@ -168,7 +170,7 @@ Stop Loss: NPR {levels.get('stop_loss', 'N/A')}
         <html><body style="font-family:Arial,sans-serif;">
             <h2>{alert_type}</h2>
             <p><strong>{symbol}</strong> hit NPR {current_price} (target was NPR {target_price})</p>
-            <p>Time: {datetime.now().strftime('%Y-%m-%d %H:%M')}</p>
+            <p>Time: {datetime.now(NPT).strftime('%Y-%m-%d %H:%M')}</p>
         </body></html>
         """
         return self.send_alert(subject, body_html)
