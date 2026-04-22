@@ -3,7 +3,7 @@
 > Virtual portfolio tracking the bot's signals with NPR 10,000,000 starting capital.
 > Updated automatically after each trading day. No real money involved.
 
-**Last updated:** 2026-03-30 13:30 NPT
+**Last updated:** 2026-04-22 13:25 NPT
 
 ---
 
@@ -12,38 +12,69 @@
 | Metric | Value |
 |--------|------:|
 | Starting Capital | Rs 10,000,000 |
-| Current Equity | Rs 10,000,000 |
-| Cash | Rs 10,000,000 |
-| Invested | Rs 0 |
-| **Total Return** | **+0.00%** |
-| Max Drawdown | 0.0% |
-| Total Trades | 0 |
+| Current Equity | Rs 9,659,569 |
+| Cash | Rs 2,960,392 |
+| Invested | Rs 6,699,177 |
+| **Total Return** | **-3.40%** |
+| Max Drawdown | 4.5% |
+| Total Trades | 6 |
 | Win Rate | 0% |
 | Avg Win | +0.0% |
-| Avg Loss | +0.0% |
+| Avg Loss | -6.3% |
 
 ---
 
 ## Equity Curve (Last 20 Days)
 
 ```
-  03-29 █ Rs 10,000,000
-  03-29 █ Rs 10,000,000
-  03-30 █ Rs 10,000,000
+  03-30 ████████████████ Rs 10,000,000
+  03-31 ██████████████ Rs 9,960,163
+  04-01 █████ Rs 9,674,657
+  04-07 ██ Rs 9,580,195
+  04-08 ███████ Rs 9,746,991
+  04-09 █████████ Rs 9,793,831
+  04-12 ███████ Rs 9,728,160
+  04-13 █████ Rs 9,683,551
+  04-14 █████ Rs 9,683,551
+  04-15 █████████ Rs 9,798,216
+  04-16 ███████ Rs 9,734,221
+  04-19 ██████ Rs 9,700,574
+  04-20 ███ Rs 9,613,296
+  04-21 █ Rs 9,546,653
 
 ```
 
 ---
 
-## Open Positions (0)
+## Open Positions (10)
 
-*No open positions*
+| Symbol | Shares | Avg Cost | Current | P&L% |
+|--------|-------:|--------:|---------:|------:|
+| ALBSL | 521 | 1181.0 | 1181.0 | +0.0% |
+| EBL | 859 | 699.9 | 699.9 | +0.0% |
+| HHL | 908 | 404.0 | 404.0 | +0.0% |
+| JBBL | 2,335 | 374.9 | 374.9 | +0.0% |
+| KKHC | 1,180 | 281.6 | 281.6 | +0.0% |
+| NABIL | 1,611 | 531.0 | 531.0 | +0.0% |
+| NBL | 3,109 | 278.4 | 278.4 | +0.0% |
+| SBL | 2,222 | 402.9 | 402.9 | +0.0% |
+| SHIVM | 1,365 | 685.0 | 685.0 | +0.0% |
+| SHL | 693 | 515.0 | 515.0 | +0.0% |
+
 
 ---
 
 ## Recent Trades
 
-*No completed trades yet*
+| Date | Symbol | Action | Return | Hold |
+|------|--------|--------|-------:|-----:|
+| 2026-04-21 | API | STOP_LOSS (-5.3%) | -5.8% | 12d |
+| 2026-04-19 | UMHL | STOP_LOSS (-5.5%) | -6.0% | 4d |
+| 2026-04-19 | RSDC | STOP_LOSS (-5.6%) | -6.0% | 10d |
+| 2026-04-13 | SGHC | STOP_LOSS (-6.1%) | -6.6% | 3d |
+| 2026-04-08 | HURJA | STOP_LOSS (-5.7%) | -6.2% | 3d |
+| 2026-04-08 | SAPDBL | STOP_LOSS (-6.8%) | -7.2% | 3d |
+
 
 ---
 
