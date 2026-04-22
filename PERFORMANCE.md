@@ -3,7 +3,7 @@
 > Virtual portfolio tracking the bot's signals with NPR 10,000,000 starting capital.
 > Updated automatically after each trading day. No real money involved.
 
-**Last updated:** 2026-04-22 13:25 NPT
+**Last updated:** 2026-04-22 13:31 NPT
 
 ---
 
@@ -16,7 +16,7 @@
 | Cash | Rs 2,960,392 |
 | Invested | Rs 6,699,177 |
 | **Total Return** | **-3.40%** |
-| Max Drawdown | 4.5% |
+| Max Drawdown | 4.6% |
 | Total Trades | 6 |
 | Win Rate | 0% |
 | Avg Win | +0.0% |
@@ -41,6 +41,7 @@
   04-19 ██████ Rs 9,700,574
   04-20 ███ Rs 9,613,296
   04-21 █ Rs 9,546,653
+  04-22 █ Rs 9,535,530
 
 ```
 
