@@ -1792,19 +1792,22 @@ def run_scanner(
             p["change_pct"] = ld.get("change_pct", 0.0)
 
     # ── Paper trading ────────────────────────────────────────────────────────
+    # Skip on retrain runs -- morning scan already updated the portfolio.
     paper_html = ""
-    try:
-        from paper_trader import PaperTrader
-        pt = PaperTrader()
-        # Build {symbol: price} dict for PaperTrader.process_signals
-        _live_price_map = {sym: d.get("price", 0) for sym, d in live.items()}
-        pt.process_signals(today, top_picks, _live_price_map)
-        paper_html = pt.summary_html()
-    except ImportError:
-        print("[PAPER] PaperTrader not available -- skipping")
-    except Exception as e:
-        print("[PAPER] Error: %s" % e)
-        paper_html = ""
+    if train_xgb_flag or train_gru_flag:
+        print("[PAPER] Skipping paper trading on retrain run (already done in morning scan)")
+    else:
+        try:
+            from paper_trader import PaperTrader
+            pt = PaperTrader()
+            _live_price_map = {sym: d.get("price", 0) for sym, d in live.items()}
+            pt.process_signals(today, top_picks, _live_price_map)
+            paper_html = pt.summary_html()
+        except ImportError:
+            print("[PAPER] PaperTrader not available -- skipping")
+        except Exception as e:
+            print("[PAPER] Error: %s" % e)
+            paper_html = ""
 
     # ── News Intelligence ──────────────────────────────────────────────────
     news_html = ""

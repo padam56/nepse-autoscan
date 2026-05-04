@@ -76,7 +76,11 @@ class PaperTrader:
         Returns:
             Summary dict of actions taken this day.
         """
-        self._day_index += 1
+        # Only advance day_index when the date is new -- prevents inflation
+        # from multiple runs per day (morning scan + afternoon scan + retrain)
+        last_date = self.equity_curve[-1]["date"] if self.equity_curve else None
+        if last_date != date:
+            self._day_index += 1
         actions: list[str] = []
 
         # Build a quick lookup: symbol -> pick dict
@@ -250,12 +254,19 @@ class PaperTrader:
             for sym, pos in self.positions.items()
         )
         equity = self.cash + invested
-        self.equity_curve.append({
+        new_entry = {
             "date": date,
             "equity": round(equity, 2),
             "cash": round(self.cash, 2),
             "invested": round(invested, 2),
-        })
+        }
+        # Dedup: if today's date already has an entry, replace it instead of appending.
+        # This keeps multi-run-per-day scenarios (morning + afternoon + retrain) from
+        # bloating the curve with 3 identical-date points.
+        if self.equity_curve and self.equity_curve[-1].get("date") == date:
+            self.equity_curve[-1] = new_entry
+        else:
+            self.equity_curve.append(new_entry)
 
     # ------------------------------------------------------------------
     # Performance metrics
