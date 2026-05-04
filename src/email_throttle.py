@@ -3,18 +3,16 @@ src/email_throttle.py -- Daily email/telegram rate limiter.
 
 Prevents spam by capping sends per category per day.
 
-Usage:
-    from src.email_throttle import allow
+Policy: ONE email + ONE telegram per NEPSE trading day. No exceptions
+unless category="critical" (system errors only).
 
-    if allow("morning_scan", max_per_day=1):
-        send_email(...)
+Categories:
+    morning_scan     -> 1/day (the daily quality email)
+    telegram_daily   -> 1/day (the daily quality telegram message)
+    critical         -> unlimited (system errors -- e.g., crontab wiped)
 
-Categories (with recommended caps):
-    morning_scan     -> 1/day (scanner picks email)
-    afternoon_exits  -> 1/day (exit alerts)
-    weekly_recap     -> 1/week (already cron-gated to Thursdays)
-    telegram_alert   -> 3/day (intraday price triggers)
-    critical         -> unlimited (system errors)
+All other categories (afternoon_exits, telegram_intraday, weekly_recap)
+are deprecated and capped at 0 per day. Their cron entries are removed.
 """
 import json
 from datetime import datetime, timedelta, timezone
@@ -38,17 +36,39 @@ def _save(state: dict) -> None:
     STATE_FILE.write_text(json.dumps(state, indent=2))
 
 
+# Deprecated categories -- HARD BLOCKED regardless of caller's max_per_day.
+# This is defense-in-depth: even if some code path forgets to remove a send call,
+# we won't spam the user.
+DEPRECATED = {
+    "afternoon_exits",
+    "telegram_intraday",
+    "telegram_alert",
+    "weekly_recap",
+    "telegram_morning_scan",
+    "telegram_afternoon",
+}
+
+
 def allow(category: str, max_per_day: int = 1, dedupe_key: str = "") -> bool:
     """Check and record whether a send is allowed today.
 
     Args:
-        category: bucket name (e.g. "morning_scan", "afternoon_exits")
-        max_per_day: cap for this category (NPT day)
+        category: bucket name. Allowed values: 'morning_scan', 'telegram_daily',
+                  'critical'. Anything in DEPRECATED is rejected silently.
+        max_per_day: cap for this category (NPT day). Hard-capped at 1 unless
+                     category="critical".
         dedupe_key: optional payload hash — if the same key was sent today,
                     return False even if under the cap.
 
     Returns True if sending is allowed (and records the send).
     """
+    if category in DEPRECATED:
+        return False  # spam protection -- these channels are off
+
+    # Enforce hard 1/day cap for non-critical channels
+    if category != "critical":
+        max_per_day = min(max_per_day, 1)
+
     today = datetime.now(NPT).strftime("%Y-%m-%d")
     state = _load()
     bucket = state.setdefault(category, {})

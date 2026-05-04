@@ -2129,6 +2129,20 @@ def run_scanner(
                 print("[EMAIL] Morning scan email already sent today -- skipping duplicate")
         except Exception:
             send_email(subject, html)
+
+        # ── Single Telegram summary (one per NPT trading day) ──────────────
+        # The ONLY telegram message the system sends. Throttled to 1/day.
+        try:
+            from src.email_throttle import allow as _allow
+            if _allow("telegram_daily", max_per_day=1, dedupe_key=today):
+                _send_daily_telegram(top_picks, regime, regime_conf,
+                                     portfolio.get("total_pct", 0),
+                                     portfolio.get("total_pnl", 0),
+                                     today)
+            else:
+                print("[TELEGRAM] Daily summary already sent -- skipping")
+        except Exception as _tg_err:
+            print(f"[TELEGRAM] Daily summary failed: {_tg_err}")
     else:
         # Save HTML locally for review
         out_path = ROOT / "reports" / f"scanner_{today}.html"
@@ -2137,6 +2151,54 @@ def run_scanner(
         print(f"  Report saved: {out_path}")
 
     return top_picks
+
+
+def _send_daily_telegram(top_picks: list, regime: str, regime_conf: float,
+                         port_pct: float, port_pnl: float, today: str):
+    """Send THE one daily Telegram summary -- compact, actionable."""
+    import os
+    import urllib.request
+    import urllib.parse
+    token = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    chat_id = os.getenv("TELEGRAM_CHAT_ID", "")
+    if not token or not chat_id:
+        print("[TELEGRAM] Not configured -- skipping daily summary")
+        return
+
+    regime_emoji = {"BULL": "🟢", "RANGE": "🟡", "BEAR": "🔴"}.get(regime, "⚪")
+
+    # Top 5 picks compact
+    pick_lines = []
+    for p in top_picks[:5]:
+        sym = p.get("symbol", "?")
+        sig = p.get("signal", "?")
+        sc = p.get("score", 0)
+        kelly = p.get("kelly_pct", 0)
+        price = p.get("price", 0)
+        sig_emoji = "🟢" if "STRONG BUY" in sig else ("✅" if sig == "BUY" else "⚪")
+        pick_lines.append(f"{sig_emoji} <b>{sym}</b> Rs{price:.0f} · {sig} · {sc:.0f}/100 · Kelly {kelly:.1f}%")
+
+    pnl_emoji = "📈" if port_pct >= 0 else "📉"
+    msg = (
+        f"<b>NEPSE Daily Scan — {today}</b>\n"
+        f"{regime_emoji} Regime: <b>{regime}</b> ({regime_conf:.0%})\n\n"
+        f"<b>Top {len(pick_lines)} picks:</b>\n" + "\n".join(pick_lines) + "\n\n"
+        f"{pnl_emoji} Portfolio P&L: <b>{port_pct:+.1f}%</b> (Rs {port_pnl:+,.0f})\n\n"
+        f"📧 Full report in your inbox.\n"
+        f"💬 /picks /portfolio /analyze SYM for details."
+    )
+    try:
+        url = f"https://api.telegram.org/bot{token}/sendMessage"
+        data = urllib.parse.urlencode({
+            "chat_id": chat_id, "text": msg, "parse_mode": "HTML",
+            "disable_web_page_preview": True,
+        }).encode()
+        req = urllib.request.Request(url, data=data, method="POST")
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            if resp.status == 200:
+                print("[TELEGRAM] Daily summary sent")
+    except Exception as e:
+        print(f"[TELEGRAM] Send failed: {e}")
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
