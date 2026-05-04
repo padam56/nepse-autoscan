@@ -924,6 +924,38 @@ def save_daily_prices(live: Dict[str, dict], today: str) -> None:
     print(f"[DATA] Saved {len(stocks)} stocks → {out.name}")
 
 
+def save_nepse_index(today: str) -> None:
+    """Save real NEPSE Index value daily so we accumulate true history.
+
+    Reads from Sharesansar live page via fetch_market_indices().
+    Updates data/nepse_index_history.json (date -> {open, high, low, close, turnover}).
+    """
+    try:
+        from src.live_prices import fetch_market_indices
+        m = fetch_market_indices()
+        nepse = m.get("NEPSE", {}) if m else {}
+        value = nepse.get("value", 0)
+        if value <= 0:
+            return
+        out = ROOT / "data" / "nepse_index_history.json"
+        history = {}
+        if out.exists():
+            try:
+                history = json.loads(out.read_text())
+            except Exception:
+                history = {}
+        # Only one snapshot per date; update with latest reading
+        history[today] = {
+            "close": float(value),
+            "change_pct": float(nepse.get("change", 0)),
+            "turnover": float(nepse.get("turnover", 0)),
+        }
+        out.write_text(json.dumps(history, indent=2))
+        print(f"[DATA] Saved NEPSE index {value:.2f} ({nepse.get('change',0):+.2f}%) for {today}")
+    except Exception as e:
+        print(f"[DATA] NEPSE index save failed: {e}")
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # KELLY POSITION SIZING
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1798,6 +1830,7 @@ def run_scanner(
     # ── Step 8b: Live prices + save to history ────────────────────────────────
     live = fetch_live_prices()
     save_daily_prices(live, today)
+    save_nepse_index(today)
     for p in top_picks:
         ld = live.get(p["symbol"], {})
         if ld.get("price"):

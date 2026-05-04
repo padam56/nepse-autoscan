@@ -835,6 +835,15 @@ try {{ new Chart(document.getElementById('{chart_id}'),{{
 '''
 
     # OHLCV for TradingView Lightweight Charts + index data
+    # Load real NEPSE index history first (used for both chart paths)
+    real_nepse_history = {}
+    nepse_history_file = ROOT / "data" / "nepse_index_history.json"
+    if nepse_history_file.exists():
+        try:
+            real_nepse_history = json.loads(nepse_history_file.read_text())
+        except Exception:
+            real_nepse_history = {}
+
     index_labels = []
     index_values = []
     tv_candles_data = []
@@ -864,6 +873,34 @@ try {{ new Chart(document.getElementById('{chart_id}'),{{
         tv_candles_data.append({"time": date_str, "open": o, "high": h, "low": l, "close": c})
         color = "rgba(0,228,117,0.5)" if c >= o else "rgba(255,82,82,0.5)"
         tv_volumes_data.append({"time": date_str, "value": v, "color": color})
+
+    # Replace synthetic candles with real NEPSE for any date we have data for
+    # (going forward, save_nepse_index will populate this daily).
+    if real_nepse_history and tv_candles_data:
+        for candle in tv_candles_data:
+            real = real_nepse_history.get(candle["time"])
+            if real and real.get("close"):
+                candle["open"] = round(real.get("open", real["close"]), 2)
+                candle["high"] = round(real.get("high", real["close"]), 2)
+                candle["low"]  = round(real.get("low", real["close"]), 2)
+                candle["close"] = round(real["close"], 2)
+
+    # Rescale synthetic candles so the latest value matches real NEPSE today.
+    # Preserves all relative day-over-day movements but shows accurate
+    # absolute values (e.g., 2700 instead of 905).
+    if nepse_value and tv_candles_data and tv_candles_data[-1]["close"] > 0:
+        latest_date = tv_candles_data[-1]["time"]
+        latest_is_real = latest_date in real_nepse_history
+        if not latest_is_real:
+            scale = nepse_value / tv_candles_data[-1]["close"]
+            if abs(scale - 1.0) > 0.01:  # only rescale if meaningfully off
+                for c in tv_candles_data:
+                    # Skip candles already replaced with real data
+                    if c["time"] not in real_nepse_history:
+                        c["open"]  = round(c["open"]  * scale, 2)
+                        c["high"]  = round(c["high"]  * scale, 2)
+                        c["low"]   = round(c["low"]   * scale, 2)
+                        c["close"] = round(c["close"] * scale, 2)
 
     tv_candles_json = json.dumps(tv_candles_data)
     tv_volumes_json = json.dumps(tv_volumes_data)
@@ -917,13 +954,25 @@ try {{ new Chart(document.getElementById('{chart_id}'),{{
     stock_chart_symbols = json.dumps(["NEPSE Index"] + chartable_syms)
     print(f"[DASHBOARD] Generated {len(chartable_syms)} stock data files in docs/stockdata/")
 
-    # NEPSE Index with technical indicators (from all daily snapshots)
+    # ── NEPSE Index reconstruction ──────────────────────────────────────────
+    # We don't have historical NEPSE index data (no public API), so we
+    # synthesize a proxy from the equal-weighted average of all stocks each
+    # day, then RESCALE so the latest date matches the real NEPSE Index from
+    # Sharesansar. This preserves day-over-day changes while showing
+    # accurate absolute values (e.g., 2700 instead of 631).
+    #
+    # Real historical data: see data/nepse_index_history.json (populated daily
+    # going forward by the scanner). When that file has enough data, the proxy
+    # is replaced entirely.
     idx_dates = []
     idx_opens = []
     idx_highs = []
     idx_lows = []
     idx_closes = []
     idx_volumes = []
+
+    # real_nepse_history was already loaded above (used by tv_candles_data too)
+
     for snap in daily_snapshots:
         stocks = snap["stocks"]
         prices = [s.get("lp", 0) for s in stocks.values() if s.get("lp", 0) > 0]
@@ -933,11 +982,34 @@ try {{ new Chart(document.getElementById('{chart_id}'),{{
         vols = [s.get("q", 0) for s in stocks.values()]
         if len(prices) > 50:
             idx_dates.append(snap["date"][-5:])
-            idx_opens.append(round(np.mean(opens), 2) if opens else round(np.mean(prices), 2))
-            idx_highs.append(round(np.mean(highs), 2) if highs else round(np.mean(prices), 2))
-            idx_lows.append(round(np.mean(lows), 2) if lows else round(np.mean(prices), 2))
-            idx_closes.append(round(np.mean(prices), 2))
-            idx_volumes.append(int(sum(vols)))
+            # If we have real NEPSE for this date, use it directly
+            real = real_nepse_history.get(snap["date"])
+            if real and real.get("close"):
+                idx_opens.append(round(real.get("open", real["close"]), 2))
+                idx_highs.append(round(real.get("high", real["close"]), 2))
+                idx_lows.append(round(real.get("low", real["close"]), 2))
+                idx_closes.append(round(real["close"], 2))
+                idx_volumes.append(int(real.get("turnover", 0)))
+            else:
+                # Fallback: synthetic equal-weighted proxy
+                idx_opens.append(round(np.mean(opens), 2) if opens else round(np.mean(prices), 2))
+                idx_highs.append(round(np.mean(highs), 2) if highs else round(np.mean(prices), 2))
+                idx_lows.append(round(np.mean(lows), 2) if lows else round(np.mean(prices), 2))
+                idx_closes.append(round(np.mean(prices), 2))
+                idx_volumes.append(int(sum(vols)))
+
+    # Rescale synthetic series so the latest value matches real NEPSE today.
+    # This preserves all relative movements but shows accurate absolute values.
+    if nepse_value and idx_closes and idx_closes[-1] > 0:
+        # Only rescale if the latest value is synthetic (not already real)
+        latest_date_full = daily_snapshots[-1]["date"] if daily_snapshots else None
+        latest_is_synthetic = latest_date_full not in real_nepse_history
+        if latest_is_synthetic:
+            scale = nepse_value / idx_closes[-1]
+            idx_opens   = [round(v * scale, 2) for v in idx_opens]
+            idx_highs   = [round(v * scale, 2) for v in idx_highs]
+            idx_lows    = [round(v * scale, 2) for v in idx_lows]
+            idx_closes  = [round(v * scale, 2) for v in idx_closes]
 
     c = np.array(idx_closes) if idx_closes else np.array([0])
     n_idx = len(c)
