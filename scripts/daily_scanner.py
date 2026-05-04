@@ -1772,15 +1772,28 @@ def run_scanner(
     except Exception as e:
         print(f"[TRACKER] Error: {e}")
 
-    # Enrich with per-stock feature data
+    # Enrich with per-stock feature data (paper_trader filter needs these)
     for p in top_picks:
         sym  = p["symbol"]
         feat = feat_map.get(sym, {})
         recs = histories.get(sym, [])
-        c, _, _, _, v = get_arrays(recs) if recs else (np.array([0]), *([np.array([0])] * 4))
-        p["rsi"]    = feat.get("rsi_14",  _rsi(c, 14) if len(c) > 14 else 50)
-        p["ret_5d"] = feat.get("ret_5d",  0.0)
+        c, h_arr, l_arr, _, v = get_arrays(recs) if recs else (np.array([0]),)*5
+        p["rsi"]    = float(feat.get("rsi_14",  _rsi(c, 14) if len(c) > 14 else 50))
+        p["ret_5d"] = float(feat.get("ret_5d",  0.0))
+        p["ret_20d"] = float(feat.get("ret_20d", 0.0))
         p["price"]  = float(c[-1]) if len(c) > 0 else 0.0
+        # Distance from 52-week high (0 = at high, -0.20 = 20% below)
+        if len(h_arr) >= 5:
+            high_52w = float(h_arr[-min(252, len(h_arr)):].max())
+            p["dist_52w"] = (p["price"] / high_52w - 1) if high_52w > 0 else -1.0
+        else:
+            p["dist_52w"] = -0.5
+        # Volume ratio (today vs 20d average)
+        if len(v) >= 20:
+            avg_vol = float(v[-20:].mean())
+            p["vol_ratio"] = float(v[-1]) / avg_vol if avg_vol > 0 else 1.0
+        else:
+            p["vol_ratio"] = 1.0
 
     # ── Step 8b: Live prices + save to history ────────────────────────────────
     live = fetch_live_prices()
@@ -1790,6 +1803,39 @@ def run_scanner(
         if ld.get("price"):
             p["price"]     = ld["price"]
             p["change_pct"] = ld.get("change_pct", 0.0)
+
+    # ── NEPSE alpha layer: filter momentum picks, add capitulation buys ─────
+    # Default scanner buys momentum (loses in NEPSE). This layer adds
+    # mean-reversion edge that actually works in thin/circuit-broken markets.
+    alpha_picks = top_picks
+    try:
+        sys.path.insert(0, str(ROOT))
+        from src.nepse_alpha import filter_picks, find_capitulation_buys
+        # Filter scanner picks: drop the anti-predictive ones
+        alpha_picks = filter_picks(top_picks, min_alpha=0)
+        n_filtered = len(top_picks) - len(alpha_picks)
+        if n_filtered > 0:
+            print(f"[ALPHA] Filtered out {n_filtered} anti-predictive picks (RSI>70, FOMO, at top)")
+        # Add capitulation buys the scanner missed
+        try:
+            from src.analytics import run_analytics
+            sector_data = run_analytics(60)
+        except Exception:
+            sector_data = None
+        cap_buys = find_capitulation_buys(histories, sector_data, limit=5)
+        existing_syms = {p["symbol"] for p in alpha_picks}
+        new_caps = [c for c in cap_buys if c["symbol"] not in existing_syms]
+        if new_caps:
+            print(f"[ALPHA] Added {len(new_caps)} capitulation buys: " +
+                  ", ".join(c["symbol"] for c in new_caps[:5]))
+            alpha_picks = alpha_picks + new_caps
+        # Re-rank by combined score (alpha bias + scanner score)
+        for p in alpha_picks:
+            p["combined_score"] = p.get("score", 50) + p.get("alpha_score", 0) * 0.5
+        alpha_picks.sort(key=lambda p: p.get("combined_score", 0), reverse=True)
+        alpha_picks = alpha_picks[:TOP_N]  # cap final list
+    except Exception as e:
+        print(f"[ALPHA] Skipped (using raw scanner picks): {e}")
 
     # ── Paper trading ────────────────────────────────────────────────────────
     # Skip on retrain runs -- morning scan already updated the portfolio.
@@ -1801,7 +1847,7 @@ def run_scanner(
             from paper_trader import PaperTrader
             pt = PaperTrader()
             _live_price_map = {sym: d.get("price", 0) for sym, d in live.items()}
-            pt.process_signals(today, top_picks, _live_price_map)
+            pt.process_signals(today, alpha_picks, _live_price_map)
             paper_html = pt.summary_html()
         except ImportError:
             print("[PAPER] PaperTrader not available -- skipping")

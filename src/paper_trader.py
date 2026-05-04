@@ -35,10 +35,22 @@ class PaperTrader:
     STATE_FILE = ROOT / "data" / "paper_portfolio.json"
     TRADE_LOG = ROOT / "data" / "paper_trades.json"
     COMMISSION = 0.005  # 0.5 % per side
-    MAX_POSITIONS = 10
-    MAX_KELLY = 0.15  # cap kelly allocation at 15 % of portfolio
-    MIN_HOLD_DAYS = 3  # no selling before 3 trading days
-    STOP_LOSS_PCT = 0.05  # sell if position drops > 5 % from entry
+    MAX_POSITIONS = 8  # was 10 -- more diversification, smaller positions
+    MAX_KELLY = 0.10  # was 0.15 -- smaller positions to allow more losses without ruin
+    MIN_HOLD_DAYS = 5  # was 3 -- avoid noise-driven exits in thin NEPSE market
+    STOP_LOSS_PCT = 0.08  # was 0.05 -- NEPSE has ±10% circuit breakers, -5% was inside daily noise
+    TRAIL_STOP_PCT = 0.12  # exit if price drops 12% from high-water mark (locks in profits)
+    PROFIT_TARGET = 0.06  # take partial profit at +6%
+
+    # Entry filters (block anti-predictive setups proven to lose money)
+    BLOCK_NEAR_52W_HIGH_PCT = 0.03   # skip stocks within 3% of 52-week high
+    BLOCK_RSI_ABOVE = 70             # skip overbought (was implicit — signals favor RSI 50+)
+    BLOCK_RECENT_5D_GAIN = 0.15      # skip stocks that already ran +15% in 5 days
+    REQUIRE_VOL_RATIO = 0.8          # skip illiquid stocks (volume below 80% of avg)
+
+    # Drawdown brake (halve next bet after losing streak)
+    LOSS_STREAK_THRESHOLD = 3        # 3 losses in a row -> halve sizing
+    LOSS_STREAK_MULT = 0.5           # multiplier when in drawdown
 
     def __init__(self):
         self.cash: float = self.INITIAL_CAPITAL
@@ -93,21 +105,39 @@ class PaperTrader:
             if price is None:
                 continue  # no price data today, skip
 
+            # Track high-water mark for trailing stop
+            hwm = pos.get("high_water_mark", pos["avg_cost"])
+            if price > hwm:
+                pos["high_water_mark"] = price
+                hwm = price
+
             days_held = self._day_index - pos.get("entry_idx", self._day_index)
             if days_held < self.MIN_HOLD_DAYS:
                 continue  # minimum hold period not met
 
-            # Check signal
+            # Check explicit sell signal
             pick = pick_map.get(sym, {})
             signal = pick.get("signal", "HOLD")
             if signal in ("SELL", "STRONG SELL"):
                 symbols_to_sell.append((sym, f"signal={signal}"))
                 continue
 
-            # Check stop loss
             pct_change = (price - pos["avg_cost"]) / pos["avg_cost"]
+            pct_from_hwm = (price - hwm) / hwm if hwm > 0 else 0
+
+            # Trailing stop: exit if down >TRAIL_STOP_PCT from peak (locks in profits)
+            if pct_from_hwm < -self.TRAIL_STOP_PCT and pct_change > 0:
+                symbols_to_sell.append((sym, f"trail_stop ({pct_from_hwm:+.1%} from peak)"))
+                continue
+
+            # Hard stop: exit if down > STOP_LOSS_PCT from entry
             if pct_change < -self.STOP_LOSS_PCT:
                 symbols_to_sell.append((sym, f"stop_loss ({pct_change:+.1%})"))
+                continue
+
+            # Time-based exit: 20+ days held with no progress -> cut
+            if days_held >= 20 and pct_change < 0.02:
+                symbols_to_sell.append((sym, f"time_stop ({days_held}d, {pct_change:+.1%})"))
 
         for sym, reason in symbols_to_sell:
             price = live_prices.get(sym)
@@ -116,11 +146,22 @@ class PaperTrader:
                 actions.append(f"SELL {sym} @ {price:.2f} ({reason})")
 
         # --- 2. Check entries --------------------------------------------------
+        # Compute drawdown brake: halve position size after losing streak
+        recent_trades = self.trades[-self.LOSS_STREAK_THRESHOLD:] if self.trades else []
+        in_drawdown = (
+            len(recent_trades) >= self.LOSS_STREAK_THRESHOLD
+            and all(t.get("pnl_pct", 0) <= 0 for t in recent_trades)
+        )
+        size_mult = self.LOSS_STREAK_MULT if in_drawdown else 1.0
+        if in_drawdown:
+            actions.append(f"[DRAWDOWN BRAKE] {self.LOSS_STREAK_THRESHOLD} losses in a row -- sizing halved")
+
         buy_signals = [
             p for p in picks
             if p.get("signal") in ("BUY", "STRONG BUY")
             and p["symbol"] not in self.positions
             and live_prices.get(p["symbol"], 0) > 0
+            and self._passes_entry_filter(p, actions)
         ]
         # Sort by score descending so best picks first
         buy_signals.sort(key=lambda p: p.get("score", 0), reverse=True)
@@ -134,6 +175,7 @@ class PaperTrader:
             sym = pick["symbol"]
             price = live_prices[sym]
             kelly_pct = min(pick.get("kelly_pct", 5.0), self.MAX_KELLY * 100) / 100.0
+            kelly_pct *= size_mult  # apply drawdown brake
             amount_npr = portfolio_value * kelly_pct
 
             # Do not spend more than available cash
@@ -159,6 +201,46 @@ class PaperTrader:
             "cash": round(self.cash, 2),
             "equity": self.equity_curve[-1]["equity"] if self.equity_curve else self.cash,
         }
+
+    # ------------------------------------------------------------------
+    # Entry filter (block anti-predictive setups)
+    # ------------------------------------------------------------------
+    def _passes_entry_filter(self, pick: dict, actions: list) -> bool:
+        """Reject picks that the data shows are anti-predictive.
+
+        Backtest evidence (13 trades, 0 wins, all stopped at -5%):
+        - momentum-chasing in NEPSE mean-reverts hard
+        - stocks at 52w high pull back
+        - high RSI is exit signal, not entry
+        - already-pumped stocks (>15% in 5d) are tops, not breakouts
+        """
+        sym = pick.get("symbol", "?")
+        rsi = pick.get("rsi", 50)
+        ret_5d = pick.get("ret_5d", 0)  # decimal, not percent
+        dist_52w = pick.get("dist_52w", -0.5)  # 0 means at high
+        vol_ratio = pick.get("vol_ratio", 1.0)
+
+        # Filter 1: RSI overbought
+        if rsi > self.BLOCK_RSI_ABOVE:
+            actions.append(f"[FILTER] {sym} skipped: RSI {rsi:.0f} > {self.BLOCK_RSI_ABOVE}")
+            return False
+
+        # Filter 2: at top of range (no upside left)
+        if dist_52w > -self.BLOCK_NEAR_52W_HIGH_PCT:
+            actions.append(f"[FILTER] {sym} skipped: {dist_52w*100:+.1f}% from 52w high (too close)")
+            return False
+
+        # Filter 3: already pumped (FOMO entry, fade risk)
+        if ret_5d > self.BLOCK_RECENT_5D_GAIN:
+            actions.append(f"[FILTER] {sym} skipped: +{ret_5d*100:.1f}% in 5d (already pumped)")
+            return False
+
+        # Filter 4: illiquid (volume below avg means no real interest)
+        if vol_ratio < self.REQUIRE_VOL_RATIO:
+            actions.append(f"[FILTER] {sym} skipped: vol_ratio {vol_ratio:.1f} < {self.REQUIRE_VOL_RATIO}")
+            return False
+
+        return True
 
     # ------------------------------------------------------------------
     # Trade execution helpers
