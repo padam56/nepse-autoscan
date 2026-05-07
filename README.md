@@ -16,9 +16,15 @@
 
 ### [>> Live Dashboard <<](https://padam56.github.io/nepse-autoscan/)
 
+> **STATUS — automation paused.** Cron jobs and background services have been
+> stopped. The codebase is intact and works on demand; nothing runs on a
+> schedule. See [Manual Operation](#manual-operation) below for how to invoke
+> the scanner yourself when you want a fresh report. To re-enable
+> automation later, see [Setup](#-setup).
+
 ---
 
-An open-source quantitative trading system that scans **310+ NEPSE-listed stocks** every trading morning using **XGBoost, LightGBM, and GRU deep learning models**, detects market regimes, applies risk controls, and delivers ranked stock picks with Kelly-optimal position sizing — completely autonomous, running on a GPU server with daily email reports.
+An open-source quantitative trading system that scans **310+ NEPSE-listed stocks** using **XGBoost, LightGBM, and GRU deep learning models**, detects market regimes, applies risk controls, and delivers ranked stock picks with Kelly-optimal position sizing.
 
 Built for retail investors in Nepal who want data-driven decisions without staring at charts all day.
 
@@ -274,6 +280,33 @@ The regime multiplier scales all signal conviction. In bear markets, even techni
 4. **Regime awareness** — automatically reduces exposure in downturns
 5. **Ensemble diversity** — XGB, LGB, GRU, and TA are sufficiently decorrelated
 6. **Kelly sizing** — mathematically optimal position sizing given estimated edge
+
+---
+
+## Manual Operation
+
+Automation is currently disabled. To run the scanner once on demand:
+
+```bash
+cd ~/Workspace/NEPSE
+export $(grep -v '^#' .env | xargs)
+python3 scripts/daily_scanner.py --print     # console output, no email
+python3 scripts/daily_scanner.py              # console + email + telegram
+python3 scripts/update_performance.py --push  # regen dashboard, push to GitHub
+```
+
+`--print` is recommended unless you specifically want the email/telegram fired.
+The scanner is fully self-contained — no cron or background services required.
+
+To stop everything (re-confirm clean state):
+
+```bash
+crontab -r 2>/dev/null              # remove all cron jobs
+pkill -9 -x ollama 2>/dev/null      # stop ollama if running
+pkill -9 -f "scripts/telegram_commands.py" 2>/dev/null
+```
+
+To re-enable automation later, see [Setup](#-setup) below.
 
 ---
 
