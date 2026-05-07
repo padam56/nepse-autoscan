@@ -351,12 +351,12 @@ class PortfolioManager:
         if os.path.exists(self.position_file):
             with open(self.position_file) as f:
                 return json.load(f)
-        # Default: your initial position
+        # Empty default -- repo is public, no hardcoded personal data.
         return {
             "symbol": self.symbol,
-            "shares": 8046,
-            "wacc": 549.87,
-            "total_cost": 4424248.16,
+            "shares": 0,
+            "wacc": 0.0,
+            "total_cost": 0.0,
             "realized_pnl": 0.0,
             "trades_count": 0,
         }

@@ -41,3 +41,8 @@ __pycache__/
 # Screenshots
 *.png
 *.nfs*
+
+# Personal data — never commit to public repo
+portfolio/
+*.local.json
+position.json

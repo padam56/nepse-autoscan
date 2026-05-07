@@ -51,8 +51,8 @@ def run_full_signal(send_email: bool = True, quick: bool = False):
     print("\n[2/5] Loading your position...")
     pm = PortfolioManager("ALICL")
     position = pm.position
-    wacc = position.get("wacc", 549.87)
-    shares = position.get("shares", 8046)
+    wacc = position.get("wacc", 0)
+    shares = position.get("shares", 0)
     pnl_pct = ((current_price - wacc) / wacc * 100) if wacc > 0 else 0
     print(f"    [OK] Shares: {shares:,} | WACC: NPR {wacc:,.2f} | P&L: {pnl_pct:+.2f}%")
 

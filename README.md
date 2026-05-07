@@ -155,33 +155,26 @@ Every trading morning, this lands in your inbox — a complete scan of the marke
 │   alignment and a 6.1% weekly gain confirming active accumulation.        │
 │   RSI at 58 sits in the ideal 'room to run' zone. Key risk: ML score     │
 │   of 49 suggests fundamentals aren't fully corroborating the setup."      │
-├───────────────────────────────────────────────────────────────────────────┤
-│  Portfolio Status                                                         │
-│  ALICL   8,046 shares @ 549.87    BPCL     200 shares @ 535.18           │
-│  TTL       368 shares @ 922.92    BARUN    400 shares @ 391.41           │
-│  NLIC      273 shares @ 746.84                                            │
 └───────────────────────────────────────────────────────────────────────────┘
 ```
 
-Each pick includes a 2-sentence LLM rationale from Claude Sonnet 4.6 (falls back to local Qwen 2.5 14B if API unavailable). The portfolio section tracks your actual holdings with live P&L.
+Each pick includes a 2-sentence LLM rationale from Claude Sonnet 4.6 (falls back to local Qwen 2.5 14B if API unavailable).
 
-### My current portfolio
+### Portfolio tracking
 
-The system was built around this portfolio — 5 holdings across life insurance, hydropower, and banking:
+This repo is **public** and intentionally ships with no personal holdings.
+Portfolio P&L tracking is opt-in: create your own `portfolio/config.py`
+locally (gitignored) with shape:
 
-| Symbol | Shares | WACC (NPR) | Sector |
-|--------|-------:|----------:|--------|
-| ALICL | 8,046 | 549.87 | Life Insurance |
-| TTL | 368 | 922.92 | Hydropower |
-| NLIC | 273 | 746.84 | Life Insurance |
-| BPCL | 200 | 535.18 | Hydropower |
-| BARUN | 400 | 391.41 | Hydropower |
-
-Every daily scan includes live P&L for these holdings. To use your own portfolio, either edit `portfolio/config.py` or sync directly from MeroShare:
-
-```bash
-python scripts/sync_portfolio.py
+```python
+PORTFOLIO = {
+    "SYMBOL": {"shares": 100, "wacc": 250.50},
+    ...
+}
 ```
+
+Or, if your environment supports it, sync from MeroShare. Never commit
+real holdings to a public repo.
 
 ---
 

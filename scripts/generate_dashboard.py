@@ -244,21 +244,8 @@ def generate():
     evaluated = [s for s in signals if s.get("hit") is not None]
     sig_hit_rate = sum(1 for s in evaluated if s.get("hit")) / len(evaluated) * 100 if evaluated else 0
 
-    # ── Personal portfolio (from portfolio/config.py) ───────────────────
-    try:
-        from portfolio.config import PORTFOLIO as _PORT_CFG
-        portfolio_holdings = [
-            {"symbol": sym, "shares": p["shares"], "wacc": p["wacc"]}
-            for sym, p in _PORT_CFG.items()
-        ]
-    except ImportError:
-        portfolio_holdings = [
-            {"symbol": "ALICL", "shares": 8046, "wacc": 549.87},
-            {"symbol": "TTL",   "shares": 368,  "wacc": 922.92},
-            {"symbol": "NLIC",  "shares": 273,  "wacc": 746.84},
-            {"symbol": "BPCL",  "shares": 200,  "wacc": 535.18},
-            {"symbol": "BARUN", "shares": 400,  "wacc": 391.41},
-        ]
+    # Portfolio rendering removed -- repo is public, no personal data here.
+    portfolio_holdings: list = []
 
     # ── Build HTML sections ───────────────────────────────────────────────
 
@@ -432,33 +419,7 @@ def generate():
     if not ai_cards_html:
         ai_cards_html = '<div class="glass-card rounded-2xl p-8 col-span-3 text-center text-outline">No stocks currently match AI screening criteria (RSI 45-65, EMA aligned, moderate momentum)</div>'
 
-    # Portfolio rows — use live prices from `latest` (has Sharesansar data merged)
-    port_rows_html = ""
-    port_total_inv = 0
-    port_total_cur = 0
-    for pos in portfolio_holdings:
-        sym = pos["symbol"]
-        live_d = latest.get(sym, {})
-        ltp = live_d.get("lp", 0)
-        if ltp <= 0:
-            recs = all_stocks.get(sym, [])
-            ltp = recs[-1].get("lp", pos["wacc"]) if recs else pos["wacc"]
-        pnl_pct = (ltp / pos["wacc"] - 1) * 100
-        pnl_rs = (ltp - pos["wacc"]) * pos["shares"]
-        port_total_inv += pos["wacc"] * pos["shares"]
-        port_total_cur += ltp * pos["shares"]
-        cls = "text-tertiary" if pnl_rs >= 0 else "text-error"
-        port_rows_html += f'''<tr class="hover:bg-surface-container-highest/30 transition-colors">
-            <td class="px-6 py-3 font-bold">{sym}</td>
-            <td class="px-6 py-3 text-right">{pos["shares"]:,}</td>
-            <td class="px-6 py-3 text-right">{pos["wacc"]:.0f}</td>
-            <td class="px-6 py-3 text-right">{ltp:.0f}</td>
-            <td class="px-6 py-3 text-right {cls} font-bold">{pnl_pct:+.1f}%</td>
-        </tr>'''
-
-    port_pnl = port_total_cur - port_total_inv
-    port_pct = (port_total_cur / port_total_inv - 1) * 100 if port_total_inv > 0 else 0
-    port_cls = "text-tertiary" if port_pnl >= 0 else "text-error"
+    # (Portfolio rendering removed -- public repo, no personal data)
 
     # ── Analytics ─────────────────────────────────────────────────────
     try:
@@ -1723,44 +1684,6 @@ header, main, footer, .tab-content {{ position: relative; z-index: 10; pointer-e
       <span class="text-outline">Showing <span class="text-on-surface-variant font-semibold" id="stockCountBottom">{total_stocks}</span> of {total_stocks} stocks</span>
       <span class="text-outline hidden sm:inline">Click headers to sort &middot; Click row to expand &middot; Type to search</span>
     </div>
-  </div>
-</section>
-
-<!-- My Portfolio -->
-<section>
-  <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-6">
-    <h2 class="text-2xl font-headline font-black">My Portfolio</h2>
-    <div class="flex gap-4">
-      <div class="text-right">
-        <p class="text-[10px] font-label text-outline uppercase tracking-widest">Invested</p>
-        <p class="text-lg font-headline font-bold">Rs {port_total_inv:,.0f}</p>
-      </div>
-      <div class="w-px h-10 bg-outline-variant/20"></div>
-      <div class="text-right">
-        <p class="text-[10px] font-label text-outline uppercase tracking-widest">Current</p>
-        <p class="text-lg font-headline font-bold">Rs {port_total_cur:,.0f}</p>
-      </div>
-      <div class="w-px h-10 bg-outline-variant/20"></div>
-      <div class="text-right">
-        <p class="text-[10px] font-label text-outline uppercase tracking-widest">P&L</p>
-        <p class="text-lg font-headline font-bold {port_cls}">Rs {port_pnl:+,.0f} ({port_pct:+.1f}%)</p>
-      </div>
-    </div>
-  </div>
-  <div class="bg-surface-container rounded-2xl overflow-hidden">
-    <table class="w-full text-left text-sm font-label">
-      <thead class="text-outline border-b border-outline-variant/20 bg-surface-container-high">
-        <tr><th class="px-6 py-4">Symbol</th><th class="px-6 py-4 text-right">Shares</th><th class="px-6 py-4 text-right">WACC</th><th class="px-6 py-4 text-right">LTP</th><th class="px-6 py-4 text-right">P&L%</th></tr>
-      </thead>
-      <tbody class="divide-y divide-outline-variant/10">{port_rows_html}</tbody>
-      <tfoot>
-        <tr class="font-bold border-t-2 border-outline-variant/20">
-          <td class="px-6 py-4" colspan="3">Total</td>
-          <td class="px-6 py-4 text-right">Rs {port_total_cur:,.0f}</td>
-          <td class="px-6 py-4 text-right {port_cls}">{port_pct:+.1f}%</td>
-        </tr>
-      </tfoot>
-    </table>
   </div>
 </section>
 

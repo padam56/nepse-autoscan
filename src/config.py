@@ -1,12 +1,10 @@
 """Configuration for NEPSE stock analysis toolkit."""
 
-# ── Your Position (canonical source: portfolio/config.py) ─────
-try:
-    from portfolio.config import PORTFOLIO
-except ImportError:
-    PORTFOLIO = {
-        "ALICL": {"shares": 8046, "wacc": 549.87, "total_cost": 4_424_248.16},
-    }
+# ── Portfolio holdings ─────────────────────────────────────────
+# Empty by default. To track your own positions, populate this
+# locally (do NOT commit personal data to a public repo):
+#   PORTFOLIO = {"SYMBOL": {"shares": N, "wacc": Rs, "total_cost": Rs}}
+PORTFOLIO: dict = {}
 
 # ── Data Sources ───────────────────────────────────────────────
 MEROLAGANI_BASE = "https://www.merolagani.com"

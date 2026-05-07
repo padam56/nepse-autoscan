@@ -152,22 +152,10 @@ else:
 # Kelly fraction cap (never risk more than 15% per trade)
 MAX_KELLY   = 0.15
 
-# ── Portfolio (loaded from portfolio/config.py) ──────────────────────────────
-try:
-    sys.path.insert(0, str(ROOT))
-    from portfolio.config import PORTFOLIO as _FULL_PORTFOLIO
-    PORTFOLIO: Dict[str, dict] = {
-        sym: {"shares": p["shares"], "wacc": p["wacc"]}
-        for sym, p in _FULL_PORTFOLIO.items()
-    }
-except ImportError:
-    PORTFOLIO: Dict[str, dict] = {
-        "ALICL": {"shares": 8046,  "wacc": 549.87},
-        "TTL":   {"shares": 368,   "wacc": 922.92},
-        "NLIC":  {"shares": 273,   "wacc": 746.84},
-        "BPCL":  {"shares": 200,   "wacc": 535.18},
-        "BARUN": {"shares": 400,   "wacc": 391.41},
-    }
+# ── Portfolio (empty by default; users populate locally if desired) ──────────
+# DO NOT commit your real holdings. The repo is public.
+PORTFOLIO: Dict[str, dict] = {}
+sys.path.insert(0, str(ROOT))
 
 # ── Email config (from environment / .env) ────────────────────────────────────
 EMAIL_FROM     = os.getenv("EMAIL_FROM",    "")
@@ -1495,26 +1483,6 @@ def build_html_email(
       <!-- AI Top 3 Picks -->
       {ai_picks_html}
 
-      <!-- Portfolio -->
-      <div class="card">
-        <div class="section">
-          <h2>Portfolio Status</h2>
-          <table>
-            <tr style="background:#f5f6fa;">
-              <th style="padding:6px 8px;text-align:left;font-size:11px;color:#555;">Stock</th>
-              <th style="padding:6px 8px;text-align:right;font-size:11px;color:#555;">LTP</th>
-              <th style="padding:6px 8px;text-align:right;font-size:11px;color:#555;">P&amp;L</th>
-            </tr>
-            {port_rows}
-            <tr class="port-total">
-              <td style="padding:8px;font-weight:700;">Total</td>
-              <td style="padding:8px;text-align:right;"></td>
-              <td style="padding:8px;text-align:right;font-weight:700;color:{total_col};">{total_pct:+.1f}% (Rs {total_pnl:,.0f})</td>
-            </tr>
-          </table>
-        </div>
-      </div>
-
       <!-- Corporate Events Warnings -->
       {corp_events_html}
 
@@ -2069,13 +2037,14 @@ def run_scanner(
         if rat_preview:
             print(f"        [AI] {rat_preview}")
 
-    print(f"\n  PORTFOLIO STATUS")
-    for pos in port["positions"]:
-        arrow = "▲" if pos["pnl"] >= 0 else "▼"
-        print(f"  {pos['symbol']:<8}  {pos['shares']:>5} shares @ {pos['wacc']:.0f}  "
-              f"{arrow} {pos['pnl_pct']:+.1f}%  Rs {pos['pnl']:+,.0f}")
-    print(f"  {'─'*50}")
-    print(f"  Total P&L: Rs {port['total_pnl']:+,.0f}  ({port['total_pct']:+.1f}%)")
+    if port and port.get("positions"):
+        print(f"\n  PORTFOLIO STATUS")
+        for pos in port["positions"]:
+            arrow = "▲" if pos["pnl"] >= 0 else "▼"
+            print(f"  {pos['symbol']:<8}  {pos['shares']:>5} shares @ {pos['wacc']:.0f}  "
+                  f"{arrow} {pos['pnl_pct']:+.1f}%  Rs {pos['pnl']:+,.0f}")
+        print(f"  {'─'*50}")
+        print(f"  Total P&L: Rs {port['total_pnl']:+,.0f}  ({port['total_pct']:+.1f}%)")
     print(f"\n  Scan completed in {elapsed:.1f}s")
 
     # Build corporate events warning HTML

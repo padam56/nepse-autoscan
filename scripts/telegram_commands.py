@@ -141,17 +141,15 @@ def handle_picks():
 
 
 def handle_portfolio():
+    # Repo is public -- no hardcoded holdings. Configure locally if you
+    # want this command to track your own positions.
     try:
         from portfolio.config import PORTFOLIO
         holdings = PORTFOLIO
     except Exception:
-        holdings = [
-            {"symbol": "ALICL", "shares": 8046, "wacc": 549.87},
-            {"symbol": "TTL",   "shares": 368,  "wacc": 922.92},
-            {"symbol": "NLIC",  "shares": 273,  "wacc": 746.84},
-            {"symbol": "BPCL",  "shares": 200,  "wacc": 535.18},
-            {"symbol": "BARUN", "shares": 400,  "wacc": 391.41},
-        ]
+        send("Portfolio not configured. Add your holdings to portfolio/config.py "
+             "(local file -- never commit personal data to a public repo).")
+        return
 
     # Use live prices, fall back to historical
     try:
